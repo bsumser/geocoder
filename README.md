@@ -2,6 +2,7 @@
 
 - [Description](#description)
 - [Installation](#installation)
+- [Dependencies](#dependencies)
 - [Usage](#usage)
 
 ## Description
@@ -9,6 +10,10 @@ Geocoder is an attempt to produce turn by turn directions by using the [Texas A&
 
 ## Installation
 The geocoder repo includes a Makefile, and can be compiled with make. Use make clean to remove the executable if needed.
+
+## Dependencies
+Geocoder relies upon the [C++ REST SDK](https://github.com/microsoft/cpprestsdk), so
+please take whatever steps are neccesary on the repo to install onto your system.
 
 ## Usage
 Geocoder has a help command available if you ever need to check the arguments in the terminal.
