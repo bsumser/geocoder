@@ -5,6 +5,7 @@
 - [Usage](#usage)
 
 ## Description
+Geocoder is an attempt to produce turn by turn directions by using the [Texas A&M Geoservices web API.](https://geoservices.tamu.edu/Services/Geocode/) Programmed in C++, geocoder also makes use of Microsoft's [C++ REST SDK](https://github.com/microsoft/cpprestsdk) in order to facilitate access to the geoservices web API.
 
 ## Installation
 
