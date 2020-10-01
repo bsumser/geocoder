@@ -65,11 +65,21 @@ void htttpRequestBuilder() {     //Test request to google using cpprestsdk
     //open the stream to the output file
     pplx::task<void> requestTask = fstream::open_ostream(U("data/result.html")).then([=](ostream outFile) {
         *fileStream = outFile;
+        // Create http_client to send the request.
+        http_client client(U("https://geoservices.tamu.edu/"));
 
-        http_client client(U("https://reqres.in/api/users"));    //make http_client to send the request
-
-        uri_builder builder(U("/1"));  //building the request URI
-        //builder.append_query(U("streetAddress=9355%20Burton%20Way&city=Beverly%20Hills&state=ca&zip=90210&apikey=demo&format=csv&census=true&censusYear=2000|2010&notStore=false&version=4.01"));
+        // Build request URI and start the request.
+        uri_builder builder(U("/Services/Geocode/WebService/GeocoderService_V04_01.asmx"));
+        builder.append_query(U("streetAddress"),U("9355 Burton Way"));
+        builder.append_query(U("city"),U("Beverly Hills"));
+        builder.append_query(U("state"),U("ca"));
+        builder.append_query(U("zip"),U("90210"));
+        builder.append_query(U("apikey"),U(""));
+        builder.append_query(U("format"),U("csv"));
+        builder.append_query(U("census"),U("true"));
+        builder.append_query(U("censusYear"),U("2000|2010"));
+        builder.append_query(U("notStore"),U("false"));
+        builder.append_query(U("version"),U("4.01"));
         return client.request(methods::GET, builder.to_string());
     })
 
@@ -87,10 +97,11 @@ void htttpRequestBuilder() {     //Test request to google using cpprestsdk
     try //wait for any I/O to finish and handle exceptions
     {
         requestTask.wait();
+
     }
     catch (const std::exception &e)
     {
-        std::cout << "Error exception: " << e.what();
+        std::cout << "Error exception: " << e.what() << std::endl;
     }
 }
 
