@@ -3,51 +3,96 @@
 #include <cpprest/http_client.h>
 #include <cpprest/filestream.h>
 
-using namespace std;
+using namespace utility;                    // Common utilities like string conversions
+using namespace web;                        // Common features like URIs.
+using namespace web::http;                  // Common HTTP functionality
+using namespace web::http::client;          // HTTP client features
+using namespace concurrency::streams;       // Asynchronous streams
 
 void helpArgs();
 void loadFile();
 void loadCoord(int latStart, int longStart, int latFinish, int longFinish);
+void htttpRequestBuilder();     //Test request to google using cpprestsdk
+void httpResponseHandler(http_response response);     //Handle response from httpRequestBuilder
 
 int main(int argc, char *argv[])
 {
-    cout << "starting main loop, arguments are: ";
+    std::cout << "starting main loop, arguments are: ";
     for (int i = 0; i < argc; ++i)
-        cout << argv[i] << endl;
+        std::cout << argv[i] << std::endl;
     switch(argc) {
         case 1:
-            cout << "You have entered 0 arguments" << endl;
+            std::cout << "You have entered 0 arguments" << std::endl;
             break;
         case 2:
-            cout << "You have entered 1 argument: "<< argv[1] << " displaying help options"<< endl;
+            std::cout << "You have entered 1 argument: "<< argv[1] << " displaying help options"<< std::endl;
             helpArgs();
             break;
         case 3:
-            cout << "You have entered 2 argument: "<< argv[1] << " " << argv[2] << endl;
-            if (string(argv[1]) == "-f")
+            std::cout << "You have entered 2 argument: "<< argv[1] << " " << argv[2] << std::endl;
+            if (std::string(argv[1]) == "-f")
                 loadFile();
             break;
         case 4:
-            cout << "You have entered 3 argument: "<< argv[1] << " " << argv[2] << " " << argv[3] << endl;
-            if (string(argv[1]) == "-c")
+            std::cout << "You have entered 3 argument: "<< argv[1] << " " << argv[2] << " " << argv[3] << std::endl;
+            if (std::string(argv[1]) == "-c")
                 loadCoord(1,1,1,1);
             break;
         default:
-            cout << "default case hit, unrecognized flags input" << endl;
+            std::cout << "default case hit, unrecognized flags input" << std::endl;
     }
+    std::cout << "testing httpRequestBuilder" << std::endl;
+    htttpRequestBuilder();
     return 0;
 }
 
 void helpArgs() {
-    cout << "run with '-help' to list available options" << endl;
-    cout << "run with '-c -lat,long -lat,long' to process path between coordinates (first coordinate being the start)" << endl;
-    cout << "run with '-f /path/to/file' to load in coordinates from a text file" << endl;
+    std::cout << "run with '-help' to list available options" << std::endl;
+    std::cout << "run with '-c -lat,long -lat,long' to process path between coordinates (first coordinate being the start)" << std::endl;
+    std::cout << "run with '-f /path/to/file' to load in coordinates from a text file" << std::endl;
 }
 
 void loadFile() {
-    cout << "you have chosen to load coordinates from a file with path ''" << endl;
+    std::cout << "you have chosen to load coordinates from a file with path ''" << std::endl;
 }
 
 void loadCoord(int latStart, int longStart, int latFinish, int longFinish) {
-    cout << "you have entered coordinates via command line of: " << latStart << "," << longStart << " " << latFinish << "," << longFinish << endl;
+    std::cout << "you have entered coordinates via command line of: " << latStart << "," << longStart << " " << latFinish << "," << longFinish << std::endl;
+}
+void htttpRequestBuilder() {     //Test request to google using cpprestsdk
+    auto fileStream = std::make_shared<ostream>();
+
+    //open the stream to the output file
+    pplx::task<void> requestTask = fstream::open_ostream(U("data/result.html")).then([=](ostream outFile) {
+        *fileStream = outFile;
+
+        http_client client(U("http://bing.com/"));    //make http_client to send the request
+
+        uri_builder builder(U("/search"));  //building the request URI
+        builder.append_query(U("q"), U("cpprestsdk github"));
+        return client.request(methods::GET, builder.to_string());
+    })
+
+    .then([=](http_response response) {     //handle the response from the server
+        std::cout << "received response status code: " << response.status_code() << std::endl;
+
+        //write reponse to the file
+        return response.body().read_to_end(fileStream->streambuf());
+    })
+
+    .then([=](size_t) {   //close the file stream
+        return fileStream->close();
+    });
+
+    try //wait for any I/O to finish and handle exceptions
+    {
+        requestTask.wait();
+    }
+    catch (const std::exception &e)
+    {
+        std::cout << "Error exception: " << e.what();
+    }
+}
+
+void httpResponseHandler(http_response response){     //Handle response from httpRequestBuilder
 }
