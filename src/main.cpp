@@ -66,10 +66,10 @@ void htttpRequestBuilder() {     //Test request to google using cpprestsdk
     pplx::task<void> requestTask = fstream::open_ostream(U("data/result.html")).then([=](ostream outFile) {
         *fileStream = outFile;
 
-        http_client client(U("http://bing.com/"));    //make http_client to send the request
+        http_client client(U("https://reqres.in/api/users"));    //make http_client to send the request
 
-        uri_builder builder(U("/search"));  //building the request URI
-        builder.append_query(U("q"), U("cpprestsdk github"));
+        uri_builder builder(U("/1"));  //building the request URI
+        //builder.append_query(U("streetAddress=9355%20Burton%20Way&city=Beverly%20Hills&state=ca&zip=90210&apikey=demo&format=csv&census=true&censusYear=2000|2010&notStore=false&version=4.01"));
         return client.request(methods::GET, builder.to_string());
     })
 
