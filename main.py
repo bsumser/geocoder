@@ -6,6 +6,7 @@ import gpxpy.gpx
 def main():
     queryFields = getUserInput()
     sendRequest(queryFields)
+    gpxParser()
 
 def jprint(obj):
     text = json.dumps(obj, sort_keys=True, indent=4)
@@ -28,6 +29,17 @@ def getUserInput():
     version = "&version=4.10"
     queryFields = lat + lon + state + apikey + format + notStore + version
     return queryFields
+
+def gpxParser():
+    gpx_file = open('data/sample.gpx','r')
+
+    gpx = gpxpy.parse(gpx_file)
+
+    for track in gpx.tracks:
+        for segment in track.segments:
+            for point in segment.points:
+                print('Point at ({0},{1})'.format(point.latitude, point.longitude))
+
 
 if __name__ == "__main__":
     main()
