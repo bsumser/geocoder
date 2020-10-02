@@ -14,6 +14,7 @@ void helpArgs();
 void loadFile();
 void getUserInputAddress(char *argv[]);
 void htttpRequestBuilder(std::vector<std::string> address);     //Test request to google using cpprestsdk
+void htttpRequestBuilder(std::vector<int> coord);     //Test request to google using cpprestsdk
 
 int main(int argc, char *argv[])
 {
