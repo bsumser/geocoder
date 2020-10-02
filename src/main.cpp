@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <vector>
 #include <cpprest/http_client.h>
 #include <cpprest/filestream.h>
 
@@ -11,9 +12,8 @@ using namespace concurrency::streams;       // Asynchronous streams
 
 void helpArgs();
 void loadFile();
-void loadCoord(int latStart, int longStart, int latFinish, int longFinish);
-void htttpRequestBuilder();     //Test request to google using cpprestsdk
-void httpResponseHandler(http_response response);     //Handle response from httpRequestBuilder
+void getUserInputAddress(char *argv[]);
+void htttpRequestBuilder(std::vector<std::string> address);     //Test request to google using cpprestsdk
 
 int main(int argc, char *argv[])
 {
@@ -36,13 +36,18 @@ int main(int argc, char *argv[])
         case 4:
             std::cout << "You have entered 3 argument: "<< argv[1] << " " << argv[2] << " " << argv[3] << std::endl;
             if (std::string(argv[1]) == "-c")
-                loadCoord(1,1,1,1);
+            getUserInputAddress(argv);
             break;
         default:
             std::cout << "default case hit, unrecognized flags input" << std::endl;
     }
     std::cout << "testing httpRequestBuilder" << std::endl;
-    htttpRequestBuilder();
+    std::vector<std::string> address;
+    address.push_back("9355 Burton Way");
+    address.push_back("Beverly Hills");
+    address.push_back("ca");
+    address.push_back("90210");
+    htttpRequestBuilder(address);
     return 0;
 }
 
@@ -56,30 +61,32 @@ void loadFile() {
     std::cout << "you have chosen to load coordinates from a file with path ''" << std::endl;
 }
 
-void loadCoord(int latStart, int longStart, int latFinish, int longFinish) {
-    std::cout << "you have entered coordinates via command line of: " << latStart << "," << longStart << " " << latFinish << "," << longFinish << std::endl;
+void getUserInputAddress(char *argv[]) {
+
 }
-void htttpRequestBuilder() {     //Test request to google using cpprestsdk
+
+void htttpRequestBuilder(std::vector<std::string> address) {     //Test request to google using cpprestsdk
     auto fileStream = std::make_shared<ostream>();
 
     //open the stream to the output file
     pplx::task<void> requestTask = fstream::open_ostream(U("data/result.html")).then([=](ostream outFile) {
         *fileStream = outFile;
         // Create http_client to send the request.
-        http_client client(U("https://geoservices.tamu.edu/"));
+        http_client client(U("https://geoservices.tamu.edu/Services/Geocode/WebService/"));
 
         // Build request URI and start the request.
-        uri_builder builder(U("/Services/Geocode/WebService/GeocoderService_V04_01.asmx"));
-        builder.append_query(U("streetAddress"),U("9355 Burton Way"));
-        builder.append_query(U("city"),U("Beverly Hills"));
-        builder.append_query(U("state"),U("ca"));
-        builder.append_query(U("zip"),U("90210"));
+        uri_builder builder(U("/GeocoderService_V04_01.asmx"));
+        builder.append_query(U("streetAddress"),U(address[0]));
+        builder.append_query(U("city"),U(address[1]));
+        builder.append_query(U("state"),U(address[2]));
+        builder.append_query(U("zip"),U(address[3]));
         builder.append_query(U("apikey"),U(""));
         builder.append_query(U("format"),U("csv"));
         builder.append_query(U("census"),U("true"));
-        builder.append_query(U("censusYear"),U("2000|2010"));
+        builder.append_query(U("censusYear"),U("2010"));
         builder.append_query(U("notStore"),U("false"));
         builder.append_query(U("version"),U("4.01"));
+        std::cout << builder.to_string() << std::endl;
         return client.request(methods::GET, builder.to_string());
     })
 
@@ -103,7 +110,4 @@ void htttpRequestBuilder() {     //Test request to google using cpprestsdk
     {
         std::cout << "Error exception: " << e.what() << std::endl;
     }
-}
-
-void httpResponseHandler(http_response response){     //Handle response from httpRequestBuilder
 }
