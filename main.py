@@ -1,5 +1,7 @@
 import requests
 import json
+import gpxpy
+import gpxpy.gpx
 
 def main():
     queryFields = getUserInput()
