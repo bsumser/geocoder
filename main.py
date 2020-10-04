@@ -4,8 +4,6 @@ import gpxpy
 import gpxpy.gpx
 
 def main():
-    queryFields = getUserInput()
-    sendRequest(queryFields)
     gpxParser()
 
 def jprint(obj):
@@ -19,10 +17,10 @@ def sendRequest(queryFields):
     print(response.status_code)
     jprint(response.json())
 
-def getUserInput():
-    lat = "lat=30.610487"
-    lon = "&lon=-96.327766"
-    state = "&state=tx"
+def getUserInput(latFloat, longFloat):
+    lat = "lat=" + str(latFloat)
+    lon = "&lon=" + str(longFloat)
+    state = "&state=or"
     apikey = "&apikey=1553f4ca4c3e4e84a4c22adc3aae1886"
     format = "&format=json"
     notStore = "&notStore=false"
@@ -39,6 +37,8 @@ def gpxParser():
         for segment in track.segments:
             for point in segment.points:
                 print('Point at ({0},{1})'.format(point.latitude, point.longitude))
+                queryFields = getUserInput(point.latitude, point.longitude)
+                sendRequest(queryFields)
 
 
 if __name__ == "__main__":
