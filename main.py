@@ -6,7 +6,6 @@ from numpy import arctan2, sin, cos, degrees, radians
 
 def main():
     gpxParser()
-    getBearing(39.099912, -94.581213, 38.627089, -90.200203)
 
 def jprint(obj):
     text = json.dumps(obj, sort_keys=True, indent=4)
@@ -38,8 +37,8 @@ def getBearing(firstLatitude, firstLongitude, secondLatitude, secondLongitude): 
     X = cos(secondLatitude) * sin((secondLongitude - firstLongitude))
     Y = (cos(firstLatitude) * sin(secondLatitude)) - (sin(firstLatitude) * cos(secondLatitude) * cos((secondLongitude - firstLongitude)))
     bearingDegrees = degrees(arctan2(X,Y))
-    print(bearingDegrees)
-    getCompassDirection(bearingDegrees)
+    print("Bearing in degrees is {0}".format(bearingDegrees))
+    return getCompassDirection(bearingDegrees)
 
 def getCompassDirection(bearingDegrees):
     direction = int(round(bearingDegrees / 22.5))
@@ -62,9 +61,12 @@ def getCompassDirection(bearingDegrees):
         15: "NNW",
         16: "N"
     }
-    print (choices.get(direction, 'default'))
+    #print (choices.get(direction, 'default'))
+    return choices.get(direction, 'default')
 
 def gpxParser():
+    curLat = 0      #initiate current latitude and longitude to 0
+    curLong = 0
     gpx_file = open('data/sample.gpx','r')
 
     gpx = gpxpy.parse(gpx_file)
@@ -72,11 +74,11 @@ def gpxParser():
     for track in gpx.tracks:
         for segment in track.segments:
             for point in segment.points:
-                curLat = point.latitude
-                curLong = point.longitude
-                print('Point at ({0},{1})'.format(point.latitude, point.longitude))
+                print('Point at ({0},{1})'.format(point.latitude, point.longitude) + ' heading {0}'.format(getBearing(curLat, curLong, float(point.latitude), float(point.longitude))))
                 #queryFields = getUserInput(point.latitude, point.longitude)
                 #sendRequest(queryFields)
+                curLat = float(point.latitude)     #update current latitude and longitude
+                curLong = float(point.longitude)
 
 
 if __name__ == "__main__":
