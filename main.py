@@ -5,7 +5,8 @@ import gpxpy.gpx
 from numpy import arctan2, sin, cos, arccos, degrees, radians
 
 def main():
-    gpxParser()
+    path = "data/sample.gpx"
+    gpxParser(path)
 
 def jprint(obj):
     text = json.dumps(obj, sort_keys=True, indent=4)
@@ -82,10 +83,10 @@ def getDistance(firstLatitude, firstLongitude, secondLatitude, secondLongitude):
     print("distance from ({0},{1}) to ({2},{3}) is {4} {5}"
     .format(firstLatitude, firstLongitude, secondLatitude, secondLongitude, distance, unit))
 
-def gpxParser():
+def gpxParser(path):
     curLat = 0      #initiate current latitude and longitude to 0
     curLong = 0
-    gpx_file = open('data/sample.gpx','r')
+    gpx_file = open(path,'r')
 
     gpx = gpxpy.parse(gpx_file)
 
