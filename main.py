@@ -2,7 +2,7 @@ import requests
 import json
 import gpxpy
 import gpxpy.gpx
-from numpy import arctan2, sin, cos, degrees, radians
+from numpy import arctan2, sin, cos, arccos, degrees, radians
 
 def main():
     gpxParser()
@@ -64,6 +64,23 @@ def getCompassDirection(bearingDegrees):
     #print (choices.get(direction, 'default'))
     return choices.get(direction, 'default')
 
+def getDistance(firstLatitude, firstLongitude, secondLatitude, secondLongitude):  #distance between coordinates using haversine formula
+    firstLatitude = radians(firstLatitude)
+    firstLongitude = radians(firstLongitude)
+    secondLatitude = radians(secondLatitude)
+    secondLongitude = radians(secondLongitude)
+    unit = "miles"
+
+    distance = 3963.0 * arccos((sin(firstLatitude) * sin(secondLatitude)) +
+    cos(firstLatitude) * cos(secondLatitude) * cos(secondLongitude - firstLongitude))
+
+    if (distance < 1):
+        distance = int(round(distance * 5280))
+        unit = "feet"
+
+    print("distance from ({0},{1}) to ({2},{3}) is {4} {5}"
+    .format(firstLatitude, firstLongitude, secondLatitude, secondLongitude, distance, unit))
+
 def gpxParser():
     curLat = 0      #initiate current latitude and longitude to 0
     curLong = 0
@@ -75,6 +92,7 @@ def gpxParser():
         for segment in track.segments:
             for point in segment.points:
                 print('Point at ({0},{1})'.format(point.latitude, point.longitude) + ' heading {0}'.format(getBearing(curLat, curLong, float(point.latitude), float(point.longitude))))
+                getDistance(curLat, curLong, float(point.latitude), float(point.longitude))
                 #queryFields = getUserInput(point.latitude, point.longitude)
                 #sendRequest(queryFields)
                 curLat = float(point.latitude)     #update current latitude and longitude
