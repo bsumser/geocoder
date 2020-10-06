@@ -37,6 +37,7 @@ def getBearing(firstLatitude, firstLongitude, secondLatitude, secondLongitude): 
     X = cos(secondLatitude) * sin((secondLongitude - firstLongitude))
     Y = (cos(firstLatitude) * sin(secondLatitude)) - (sin(firstLatitude) * cos(secondLatitude) * cos((secondLongitude - firstLongitude)))
     bearingDegrees = degrees(arctan2(X,Y))
+    bearingDegrees = (bearingDegrees + 360) % 360
     print("Bearing in degrees is {0}".format(bearingDegrees))
     return getCompassDirection(bearingDegrees)
 
