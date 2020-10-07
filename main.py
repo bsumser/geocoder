@@ -8,16 +8,15 @@ def main():
     path = "data/sample.gpx"
     gpxParser(path)
 
-def jprint(obj):
-    text = json.dumps(obj, sort_keys=True, indent=4)
-    print(text)
+def getAddress(json_data):    #Get the address from json response from API
+    return json_data['StreetAddresses'][0]['StreetAddress']
 
 def sendRequest(queryFields):
     httpClient = "https://geoservices.tamu.edu/Services/ReverseGeocoding/WebService/v04_01/HTTP/default.aspx?"
     completeQuery = httpClient + queryFields
     response = requests.get(completeQuery)
-    print(response.status_code)
-    jprint(response.json())
+    json_data = json.loads(response.text)
+    return(json_data)
 
 def getUserInput(latFloat, longFloat):
     lat = "lat=" + str(latFloat)
@@ -44,7 +43,7 @@ def getBearing(firstLatitude, firstLongitude, secondLatitude, secondLongitude): 
 
 def getCompassDirection(bearingDegrees):
     direction = int(round(bearingDegrees / 22.5))
-    print(direction)
+    #print(direction)
     choices = {
         1: "NNE",
         2: "NE",
@@ -80,8 +79,8 @@ def getDistance(firstLatitude, firstLongitude, secondLatitude, secondLongitude):
         distance = int(round(distance * 5280))
         unit = "feet"
 
-    print("distance from ({0},{1}) to ({2},{3}) is {4} {5}"
-    .format(firstLatitude, firstLongitude, secondLatitude, secondLongitude, distance, unit))
+    distanceString = " distance from previous point is {0} {1}".format(distance, unit)
+    return distanceString
 
 def gpxParser(path):
     curLat = 0      #initiate current latitude and longitude to 0
@@ -93,10 +92,10 @@ def gpxParser(path):
     for track in gpx.tracks:
         for segment in track.segments:
             for point in segment.points:
-                print('Point at ({0},{1})'.format(point.latitude, point.longitude) + ' heading {0}'.format(getBearing(curLat, curLong, float(point.latitude), float(point.longitude))))
-                getDistance(curLat, curLong, float(point.latitude), float(point.longitude))
-                #queryFields = getUserInput(point.latitude, point.longitude)
-                #sendRequest(queryFields)
+                queryFields = getUserInput(point.latitude, point.longitude)
+                print('Location is ({0},{1})'.format(point.latitude, point.longitude) 
+                + ' heading {0} at address {1}'.format(getBearing(curLat, curLong, float(point.latitude), float(point.longitude)),getAddress(sendRequest(queryFields))) 
+                + getDistance(curLat, curLong, float(point.latitude), float(point.longitude)))
                 curLat = float(point.latitude)     #update current latitude and longitude
                 curLong = float(point.longitude)
 
