@@ -6,7 +6,7 @@ from numpy import arctan2, sin, cos, arccos, degrees, radians
 
 def main():
     path = "data/sample.gpx"
-    gpxParser(path)
+    coordinateList = gpxParser(path)
 
 def getAddress(json_data):    #Get the address from json response from API
     return json_data['StreetAddresses'][0]['StreetAddress']
@@ -96,8 +96,7 @@ def geocodeCoordinate(endPoint, startPoint):
     distance)
 
 def gpxParser(path):
-    startLatitude = 0      #initiate current latitude and longitude to 0
-    startLongitude = 0
+    coordinateList = []
     gpx_file = open(path,'r')
 
     gpx = gpxpy.parse(gpx_file)
@@ -105,8 +104,9 @@ def gpxParser(path):
     for track in gpx.tracks:
         for segment in track.segments:
             for point in segment.points:
-                print("load all lats and longs into array")
-
+                coordinateList.append(point)
+    print(coordinateList[0].latitude)
+    return coordinateList
 
 if __name__ == "__main__":
     main()
