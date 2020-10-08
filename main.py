@@ -8,9 +8,9 @@ def main():
     path = "data/sample.gpx"
     coordinateList = gpxParser(path)
     queryFields = getUserInput(coordinateList[0])
-    json_data = sendRequest(queryFields)
-    address = getAddress(json_data)
-    print(address)
+    #json_data = sendRequest(queryFields)
+    #address = getAddress(json_data)
+    geocodeCoordinate(coordinateList[0], coordinateList[1])
 
 def getAddress(json_data):    #Get the address from json response from API
     return json_data['StreetAddresses'][0]['StreetAddress']
@@ -33,7 +33,7 @@ def getUserInput(coordinate):
     queryFields = lat + lon + state + apikey + format + notStore + version
     return queryFields
 
-def getBearing(startPoint, endPoint):     #Function to determine bearing
+def getBearing(endPoint, startPoint):     #Function to determine bearing
     endLatitude = radians(float(endPoint.latitude))
     endLongitude = radians(float(endPoint.longitude))
     startLatitude = radians(float(startPoint.latitude))
@@ -90,12 +90,12 @@ def geocodeCoordinate(endPoint, startPoint):
     endLatitude = float(endPoint.latitude)
     endLongitude = float(endPoint.longitude)
     startLatitude = float(startPoint.latitude)
-    startLongitude = float(previousPoint.longitude)
-    queryFields = getUserInput(endLatitude, endLongitude)
-    bearing = getBearing(startLatitude, startLongitude, endLatitude, endLongitude)
+    startLongitude = float(startPoint.longitude)
+    queryFields = getUserInput(endPoint)
+    bearing = getBearing(endPoint, startPoint)
     json_data = sendRequest(queryFields)
     address = getAddress(json_data)
-    distance = getDistance(startLatitude, startLongitude, endLatitude, endLongitude)
+    distance = getDistance(endPoint, startPoint)
     print('Location is ({0},{1}) heading {2} at address {3}'.format(endLatitude, endLongitude, bearing, address) + 
     distance)
 
