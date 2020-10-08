@@ -7,6 +7,10 @@ from numpy import arctan2, sin, cos, arccos, degrees, radians
 def main():
     path = "data/sample.gpx"
     coordinateList = gpxParser(path)
+    queryFields = getUserInput(coordinateList[0])
+    json_data = sendRequest(queryFields)
+    address = getAddress(json_data)
+    print(address)
 
 def getAddress(json_data):    #Get the address from json response from API
     return json_data['StreetAddresses'][0]['StreetAddress']
@@ -18,9 +22,9 @@ def sendRequest(queryFields):
     json_data = json.loads(response.text)
     return(json_data)
 
-def getUserInput(latFloat, longFloat):
-    lat = "lat=" + str(latFloat)
-    lon = "&lon=" + str(longFloat)
+def getUserInput(coordinate):
+    lat = "lat=" + str(coordinate.latitude)
+    lon = "&lon=" + str(coordinate.longitude)
     state = "&state=or"
     apikey = "&apikey=1553f4ca4c3e4e84a4c22adc3aae1886"
     format = "&format=json"
@@ -29,13 +33,13 @@ def getUserInput(latFloat, longFloat):
     queryFields = lat + lon + state + apikey + format + notStore + version
     return queryFields
 
-def getBearing(firstLatitude, firstLongitude, secondLatitude, secondLongitude):     #Function to determine bearing
-    firstLatitude = radians(firstLatitude)
-    firstLongitude = radians(firstLongitude)
-    secondLatitude = radians(secondLatitude)
-    secondLongitude = radians(secondLongitude)
-    X = cos(secondLatitude) * sin((secondLongitude - firstLongitude))
-    Y = (cos(firstLatitude) * sin(secondLatitude)) - (sin(firstLatitude) * cos(secondLatitude) * cos((secondLongitude - firstLongitude)))
+def getBearing(startPoint, endPoint):     #Function to determine bearing
+    endLatitude = radians(float(endPoint.latitude))
+    endLongitude = radians(float(endPoint.longitude))
+    startLatitude = radians(float(startPoint.latitude))
+    startLongitude = radians(float(startPoint.longitude))
+    X = cos(endLatitude) * sin((endLongitude - startLongitude))
+    Y = (cos(startLatitude) * sin(endLatitude)) - (sin(startLatitude) * cos(endLatitude) * cos((endLongitude - startLongitude)))
     bearingDegrees = degrees(arctan2(X,Y))
     bearingDegrees = (bearingDegrees + 360) % 360
     print("Bearing in degrees is {0}".format(bearingDegrees))
@@ -65,15 +69,15 @@ def getCompassDirection(bearingDegrees):
     #print (choices.get(direction, 'default'))
     return choices.get(direction, 'default')
 
-def getDistance(firstLatitude, firstLongitude, secondLatitude, secondLongitude):  #distance between coordinates using haversine formula
-    firstLatitude = radians(firstLatitude)
-    firstLongitude = radians(firstLongitude)
-    secondLatitude = radians(secondLatitude)
-    secondLongitude = radians(secondLongitude)
+def getDistance(endPoint, startPoint):  #distance between coordinates using haversine formula
+    endLatitude = radians(float(endPoint.latitude))
+    endLongitude = radians(float(endPoint.longitude))
+    startLatitude = radians(float(startPoint.latitude))
+    startLongitude = radians(float(startPoint.longitude))
     unit = "miles"
 
-    distance = 3963.0 * arccos((sin(firstLatitude) * sin(secondLatitude)) +
-    cos(firstLatitude) * cos(secondLatitude) * cos(secondLongitude - firstLongitude))
+    distance = 3963.0 * arccos((sin(startLatitude) * sin(endLatitude)) +
+    cos(startLatitude) * cos(endLatitude) * cos(endLongitude - startLongitude))
 
     if (distance < 1):
         distance = int(round(distance * 5280))
