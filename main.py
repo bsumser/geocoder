@@ -82,9 +82,22 @@ def getDistance(firstLatitude, firstLongitude, secondLatitude, secondLongitude):
     distanceString = " distance from previous point is {0} {1}".format(distance, unit)
     return distanceString
 
+def geocodeCoordinate(endPoint, startPoint):
+    endLatitude = float(endPoint.latitude)
+    endLongitude = float(endPoint.longitude)
+    startLatitude = float(startPoint.latitude)
+    startLongitude = float(previousPoint.longitude)
+    queryFields = getUserInput(endLatitude, endLongitude)
+    bearing = getBearing(startLatitude, startLongitude, endLatitude, endLongitude)
+    json_data = sendRequest(queryFields)
+    address = getAddress(json_data)
+    distance = getDistance(startLatitude, startLongitude, endLatitude, endLongitude)
+    print('Location is ({0},{1}) heading {2} at address {3}'.format(endLatitude, endLongitude, bearing, address) + 
+    distance)
+
 def gpxParser(path):
-    curLat = 0      #initiate current latitude and longitude to 0
-    curLong = 0
+    startLatitude = 0      #initiate current latitude and longitude to 0
+    startLongitude = 0
     gpx_file = open(path,'r')
 
     gpx = gpxpy.parse(gpx_file)
@@ -92,12 +105,7 @@ def gpxParser(path):
     for track in gpx.tracks:
         for segment in track.segments:
             for point in segment.points:
-                queryFields = getUserInput(point.latitude, point.longitude)
-                print('Location is ({0},{1})'.format(point.latitude, point.longitude) 
-                + ' heading {0} at address {1}'.format(getBearing(curLat, curLong, float(point.latitude), float(point.longitude)),getAddress(sendRequest(queryFields))) 
-                + getDistance(curLat, curLong, float(point.latitude), float(point.longitude)))
-                curLat = float(point.latitude)     #update current latitude and longitude
-                curLong = float(point.longitude)
+                print("load all lats and longs into array")
 
 
 if __name__ == "__main__":
