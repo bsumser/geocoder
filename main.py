@@ -6,11 +6,11 @@ from numpy import arctan2, sin, cos, arccos, degrees, radians
 
 def main():
     path = "data/sample.gpx"
-    coordinateList = gpxParser(path)
-    queryFields = getUserInput(coordinateList[0])
-    #json_data = sendRequest(queryFields)
-    #address = getAddress(json_data)
-    geocodeCoordinate(coordinateList[0], coordinateList[1])
+    coordinateList = gpxParser(path)    #parse sample file at path to list of points
+    queryFields = getUserInput(coordinateList[0])   #pass coordinate point to from query fields for API
+    #json_data = sendRequest(queryFields)   #send request to API with query fields
+    #address = getAddress(json_data)    #get address field from json from request to API
+    geocodeCoordinate(coordinateList[0], coordinateList[1])     #get heading from comparison of start and end points
 
 def getAddress(json_data):    #Get the address from json response from API
     return json_data['StreetAddresses'][0]['StreetAddress']
@@ -47,7 +47,6 @@ def getBearing(endPoint, startPoint):     #Function to determine bearing
 
 def getCompassDirection(bearingDegrees):
     direction = int(round(bearingDegrees / 22.5))
-    #print(direction)
     choices = {
         1: "NNE",
         2: "NE",
@@ -66,7 +65,6 @@ def getCompassDirection(bearingDegrees):
         15: "NNW",
         16: "N"
     }
-    #print (choices.get(direction, 'default'))
     return choices.get(direction, 'default')
 
 def getDistance(endPoint, startPoint):  #distance between coordinates using haversine formula
