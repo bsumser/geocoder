@@ -138,8 +138,6 @@ def gpxParser(path):
     print(coordinateList[0].latitude)
     return coordinateList
 
->>>>>>> brett
-
 def key_points(start, end, key, address):
 
     n = (len(address)-1)  # n = number of total elements in the address
@@ -186,7 +184,6 @@ def print_key(key, address): # key is the array holding the elements
         print( key[i], address[key[i]])
         i = i+1
 
->>>>>>> brett
 def addressParser(coordinateList):
     addressStringList = np.array([],dtype=object)
     print(coordinateList[0])
@@ -196,7 +193,6 @@ def addressParser(coordinateList):
         addressStringList = np.append(addressStringList, address)
         print(addressStringList[i])
     return addressStringList
->>>>>>> brett
 
 if __name__ == "__main__":
     main()
