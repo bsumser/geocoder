@@ -3,7 +3,7 @@ import numpy as np
 
 
 def main():
-    visited = False
+
     address = np.array([' main st ', ' main st ', ' main st ', ' bob ave ',
                         ' bob ave ', ' bob ave ', ' sam ', ' sam ', ' tim rd ',
                         ' tim rd ', ' tim rd ', ' tim rd '])
