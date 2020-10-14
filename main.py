@@ -14,7 +14,18 @@ def main():
     # json_data = sendRequest(queryFields)   #send request to API with query fields
     # address = getAddress(json_data)    #get address field from json from request to API
     geocodeCoordinate(coordinateList[0], coordinateList[1])     #get heading from comparison of start and end points
-    addressParser(coordinateList)
+    addressListTest = addressParser(coordinateList)
+
+    address = np.array([' main st ', ' main st ', ' main st ', ' bob ave ',
+                        ' bob ave ', ' bob ave ', ' sam ', ' sam ', ' tim rd ',
+                        ' tim rd ', ' tim rd ', ' tim rd '])
+
+    key = np.array([], dtype=int)  # initializes empty array using numpy library
+
+    start = 0  # starting element to make the comparison
+    n = (len(addressListTest) - 1)  # n = number of total elements in the address
+    end = n  # ending element to make the comparison
+    key_points(start, end, key, addressListTest)
 
     address = np.array([' main st ', ' main st ', ' main st ', ' bob ave ',
                         ' bob ave ', ' bob ave ', ' sam ', ' sam ', ' tim rd ',
@@ -127,7 +138,7 @@ def gpxParser(path):
     print(coordinateList[0].latitude)
     return coordinateList
 
-<<<<<<< HEAD
+>>>>>>> brett
 
 def key_points(start, end, key, address):
 
@@ -175,7 +186,7 @@ def print_key(key, address): # key is the array holding the elements
         print( key[i], address[key[i]])
         i = i+1
 
-=======
+>>>>>>> brett
 def addressParser(coordinateList):
     addressStringList = np.array([],dtype=object)
     print(coordinateList[0])
