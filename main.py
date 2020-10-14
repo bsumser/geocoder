@@ -2,6 +2,7 @@ import requests
 import json
 import gpxpy
 import gpxpy.gpx
+import numpy as np
 from numpy import arctan2, sin, cos, arccos, degrees, radians
 
 def main():
@@ -11,6 +12,7 @@ def main():
     #json_data = sendRequest(queryFields)   #send request to API with query fields
     #address = getAddress(json_data)    #get address field from json from request to API
     geocodeCoordinate(coordinateList[0], coordinateList[1])     #get heading from comparison of start and end points
+    addressParser(coordinateList)
 
 def getAddress(json_data):    #Get the address from json response from API
     return json_data['StreetAddresses'][0]['StreetAddress']
@@ -96,6 +98,7 @@ def geocodeCoordinate(endPoint, startPoint):
     distance = getDistance(endPoint, startPoint)
     print('Location is ({0},{1}) heading {2} at address {3}'.format(endLatitude, endLongitude, bearing, address) + 
     distance)
+    return address
 
 def gpxParser(path):
     coordinateList = []
@@ -109,6 +112,16 @@ def gpxParser(path):
                 coordinateList.append(point)
     print(coordinateList[0].latitude)
     return coordinateList
+
+def addressParser(coordinateList):
+    addressStringList = np.array([],dtype=object)
+    print(coordinateList[0])
+
+    for i in range(len(coordinateList)):
+        address = geocodeCoordinate(coordinateList[i],coordinateList[i])
+        addressStringList = np.append(addressStringList, address)
+        print(addressStringList[i])
+    return addressStringList
 
 if __name__ == "__main__":
     main()
