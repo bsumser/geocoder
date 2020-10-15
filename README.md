@@ -25,3 +25,12 @@ Once you have the repo cloned, and have sorted out any dependency issues, simply
 ```
 python main.py
 ```
+You can also run the program to produce more output information for functions
+by typing 
+```
+python main.py -v
+```
+or
+```
+python main.py --verbose
+```
