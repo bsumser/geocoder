@@ -15,10 +15,16 @@ def main():
     coordinateList = gpxParser(path)    #parse sample file at path to list of points
     queryFields = getUserInput(coordinateList[0])   #pass coordinate point to from query fields for API
     json_data = sendRequest(queryFields)   #send request to API with query fields
-    address = getAddress(json_data)    #get address field from json from request to API
-    geocodeCoordinate(coordinateList[0], coordinateList[1])     #get heading from comparison of start and end points
+    # address = getAddress(json_data)    #get address field from json from request to API
+    # geocodeCoordinate(coordinateList[0], coordinateList[1])     #get heading from comparison of start and end points
     getDistance(coordinateList[0], coordinateList[1]) 
     #addressListTest = addressParser(coordinateList)
+
+    # test multiThreadQueryMaker
+    queryList = multiThreadQueryMaker(coordinateList)
+
+    # check queryList
+    print(queryList)
 
     address = np.array([' main st ', ' main st ', ' main st ', ' bob ave ',
                         ' bob ave ', ' bob ave ', ' sam ', ' sam ', ' tim rd ',
@@ -27,9 +33,9 @@ def main():
     key = np.array([], dtype=int)  # initializes empty array using numpy library
 
     start = 0  # starting element to make the comparison
-    n = (len(addressListTest) - 1)  # n = number of total elements in the address
+    n = (len(address) - 1)  # n = number of total elements in the address
     end = n  # ending element to make the comparison
-    key_points(start, end, key, addressListTest)
+    key_points(start, end, key, address)
     
 def parseArgs():
     parser = argparse.ArgumentParser()
@@ -44,9 +50,7 @@ def parseArgs():
 def getAddress(json_data):    #Get the address from json response from API
     return json_data['StreetAddresses'][0]['StreetAddress']
 
-def sendRequest(queryFields):
-    httpClient = "https://geoservices.tamu.edu/Services/ReverseGeocoding/WebService/v04_01/HTTP/default.aspx?"
-    completeQuery = httpClient + queryFields
+def sendRequest(completeQuery):
     response = requests.get(completeQuery)
     responseCode = response.status_code
     json_data = json.loads(response.text)
@@ -54,6 +58,7 @@ def sendRequest(queryFields):
     return(json_data)
 
 def getUserInput(coordinate):
+    httpClient = "https://geoservices.tamu.edu/Services/ReverseGeocoding/WebService/v04_01/HTTP/default.aspx?"
     lat = "lat=" + str(coordinate.latitude)
     lon = "&lon=" + str(coordinate.longitude)
     state = "&state=or"
@@ -61,9 +66,9 @@ def getUserInput(coordinate):
     format = "&format=json"
     notStore = "&notStore=false"
     version = "&version=4.10"
-    queryFields = lat + lon + state + apikey + format + notStore + version
-    logging.info("",)
-    return queryFields
+    completeQuery = httpClient + lat + lon + state + apikey + format + notStore + version
+    logging.info("Complete query: %s",completeQuery)
+    return completeQuery
 
 def getBearing(endPoint, startPoint):     #Function to determine bearing
     endLatitude = radians(float(endPoint.latitude))
@@ -118,6 +123,7 @@ def getDistance(endPoint, startPoint):  #distance between coordinates using have
     return distanceString
 
 def geocodeCoordinate(endPoint, startPoint):
+    # TODO: perhaps change this function to be overload, so you could call with one coordinate
     endLatitude = float(endPoint.latitude)
     endLongitude = float(endPoint.longitude)
     startLatitude = float(startPoint.latitude)
@@ -206,6 +212,20 @@ def addressParser(coordinateList):
         # append address to addressStringList
         addressStringList = np.append(addressStringList, address)
     return addressStringList
+
+def multiThreadQueryMaker(coordinateList):
+    launcherQueryStringList = []
+
+    for i in range(len(coordinateList)):
+        logging.info("calling getUserInput on coordinateList index %i, point:(%i,%i)",
+        i, coordinateList[i].latitude,coordinateList[i].longitude)
+        # convert coordinate to query parameters
+        completeQuery = getUserInput(coordinateList[i])
+
+        # append the completeQuery to launcherQueryStringList
+        launcherQueryStringList.append(completeQuery)
+
+    return launcherQueryStringList
 
 if __name__ == "__main__":
     main()
