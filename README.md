@@ -4,6 +4,7 @@
 - [Installation](#installation)
 - [Dependencies](#dependencies)
 - [Usage](#usage)
+- [Turn-by-turn Algorithm](#turn-by-turnalgorithm)
 
 ## Description
 Geocoder is an attempt to produce turn by turn directions from a gpx file/route by using the [Texas A&M Geoservices web API.](https://geoservices.tamu.edu/Services/Geocode/). 
@@ -34,3 +35,6 @@ or
 ```
 python main.py --verbose
 ```
+## turn-by-turnalgorithm
+Below is pseudocode for the turn-by-turn algorithm that geocode utilizes to determine
+at which points in the route turns occur.
