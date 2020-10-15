@@ -6,17 +6,19 @@ import numpy as np
 from numpy import arctan2, sin, cos, arccos, degrees, radians
 import numpy as np
 import math
+import logging
+import argparse
 
 def main():
+    parseArgs()
     path = "data/sample.gpx"
     coordinateList = gpxParser(path)    #parse sample file at path to list of points
     queryFields = getUserInput(coordinateList[0])   #pass coordinate point to from query fields for API
     # json_data = sendRequest(queryFields)   #send request to API with query fields
     # address = getAddress(json_data)    #get address field from json from request to API
     geocodeCoordinate(coordinateList[0], coordinateList[1])     #get heading from comparison of start and end points
-    addressListTest = addressParser(coordinateList)
-
-    print(addressListTest)
+    getDistance(coordinateList[0], coordinateList[1]) 
+    #addressListTest = addressParser(coordinateList)
 
     address = np.array([' main st ', ' main st ', ' main st ', ' bob ave ',
                         ' bob ave ', ' bob ave ', ' sam ', ' sam ', ' tim rd ',
@@ -28,6 +30,16 @@ def main():
     n = (len(addressListTest) - 1)  # n = number of total elements in the address
     end = n  # ending element to make the comparison
     key_points(start, end, key, addressListTest)
+    
+def parseArgs():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-v","--verbose", help="increases output verbosity", action="store_true")
+    args = parser.parse_args()
+    if (args.verbose):
+        logging.basicConfig(level=logging.INFO)
+        print("-v or --verbose flag used, logging mode set to info")
+    else:
+        print("no arguments selected")
 
 def getAddress(json_data):    #Get the address from json response from API
     return json_data['StreetAddresses'][0]['StreetAddress']
@@ -48,6 +60,7 @@ def getUserInput(coordinate):
     notStore = "&notStore=false"
     version = "&version=4.10"
     queryFields = lat + lon + state + apikey + format + notStore + version
+    logging.info("getUserInput() query is: %s",queryFields)
     return queryFields
 
 def getBearing(endPoint, startPoint):     #Function to determine bearing
@@ -59,7 +72,7 @@ def getBearing(endPoint, startPoint):     #Function to determine bearing
     Y = (cos(startLatitude) * sin(endLatitude)) - (sin(startLatitude) * cos(endLatitude) * cos((endLongitude - startLongitude)))
     bearingDegrees = degrees(arctan2(X,Y))
     bearingDegrees = (bearingDegrees + 360) % 360
-    print("Bearing in degrees is {0}".format(bearingDegrees))
+    logging.info("Bearing in degrees is %i", bearingDegrees)
     return getCompassDirection(bearingDegrees)
 
 def getCompassDirection(bearingDegrees):
@@ -99,6 +112,7 @@ def getDistance(endPoint, startPoint):  #distance between coordinates using have
         unit = "feet"
 
     distanceString = " distance from previous point is {0} {1}".format(distance, unit)
+    logging.info("%s",distanceString)
     return distanceString
 
 def geocodeCoordinate(endPoint, startPoint):
@@ -111,8 +125,7 @@ def geocodeCoordinate(endPoint, startPoint):
     json_data = sendRequest(queryFields)
     address = getAddress(json_data)
     distance = getDistance(endPoint, startPoint)
-    print('Location is ({0},{1}) heading {2} at address {3}'.format(endLatitude, endLongitude, bearing, address) + 
-    distance)
+    logging.info("Location is (%i,%i)",endLatitude, endLongitude)
     return address
 
 def gpxParser(path):
@@ -183,7 +196,6 @@ def addressParser(coordinateList):
         address = geocodeCoordinate(coordinateList[i],coordinateList[i])
         address = address.split(" ",1)[1]
         addressStringList = np.append(addressStringList, address)
-        # print(addressStringList[i])
     return addressStringList
 
 if __name__ == "__main__":
