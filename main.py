@@ -16,16 +16,19 @@ def main():
     coordinateList = gpxParser(path)    #parse sample file at path to list of points
     queryFields = getUserInput(coordinateList[0])   #pass coordinate point to from query fields for API
     json_data = sendRequest(queryFields)   #send request to API with query fields
-    address = getAddress(json_data)    #get address field from json from request to API
-    geocodeCoordinate(coordinateList[0], coordinateList[1])     #get heading from comparison of start and end points
+    #address = getAddress(json_data)    #get address field from json from request to API
+    #geocodeCoordinate(coordinateList[0], coordinateList[1])     #get heading from comparison of start and end points
     getDistance(coordinateList[0], coordinateList[1]) 
+
+    for i in range(len(coordinateList)):
+        bearingDifCalc(coordinateList[i], coordinateList[i+1], coordinateList[i+2])
     #addressListTest = addressParser(coordinateList)
 
     # test multiThreadQueryMaker
-    queryList = multiThreadQueryMaker(coordinateList)
+    # queryList = multiThreadQueryMaker(coordinateList)
 
     # check queryList
-    print(queryList)
+    # print(queryList)
 
     # run the query list
     # queryRunner(queryList)
@@ -59,7 +62,7 @@ def sendRequest(completeQuery):
     response = requests.get(completeQuery)
     responseCode = response.status_code
     json_data = json.loads(response.text)
-    logging.info("sendRequest() request URL is: %s \n Status Code:%i",completeQuery,responseCode)
+    #logging.info("sendRequest() request URL is: %s \n Status Code:%i",completeQuery,responseCode)
     return json_data
 
 def getUserInput(coordinate):
@@ -72,7 +75,7 @@ def getUserInput(coordinate):
     notStore = "&notStore=false"
     version = "&version=4.10"
     completeQuery = httpClient + lat + lon + state + apikey + format + notStore + version
-    logging.info("Complete query: %s",completeQuery)
+    #logging.info("Complete query: %s",completeQuery)
     return completeQuery
 
 def getBearing(endPoint, startPoint):     #Function to determine bearing
@@ -85,7 +88,7 @@ def getBearing(endPoint, startPoint):     #Function to determine bearing
     bearingDegrees = degrees(arctan2(X,Y))
     bearingDegrees = (bearingDegrees + 360) % 360
     logging.info("Bearing in degrees is %i", bearingDegrees)
-    return getCompassDirection(bearingDegrees)
+    return bearingDegrees
 
 def getCompassDirection(bearingDegrees):
     direction = int(round(bearingDegrees / 22.5))
@@ -242,6 +245,12 @@ def queryRunner(launcherQueryStringList):
         
         for task in as_completed(threads):
             print(task.result())
+
+def bearingDifCalc(startPoint, midPoint, endPoint):
+    bearingDelta1 = getBearing(midPoint, startPoint)
+    bearingDelta2 = getBearing(endPoint, midPoint)
+    totalBearingDelta = bearingDelta2 - bearingDelta1
+    logging.info("change in bearing is: %i = %i - %i",totalBearingDelta, bearingDelta2, bearingDelta1)
 
 if __name__ == "__main__":
     main()
