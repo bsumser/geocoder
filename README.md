@@ -19,6 +19,7 @@ Geocoder relies upon the requests, and gpxpy module, you can use pip to install 
 ```
 pip install requests
 pip install gpxpy
+pip install numpy
 ```
 
 ## Usage
