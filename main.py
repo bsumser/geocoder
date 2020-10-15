@@ -27,6 +27,9 @@ def main():
     # check queryList
     print(queryList)
 
+    # run the query list
+    queryRunner(queryList)
+
     address = np.array([' main st ', ' main st ', ' main st ', ' bob ave ',
                         ' bob ave ', ' bob ave ', ' sam ', ' sam ', ' tim rd ',
                         ' tim rd ', ' tim rd ', ' tim rd '])
@@ -228,10 +231,16 @@ def multiThreadQueryMaker(coordinateList):
 
     return launcherQueryStringList
 
-def queryRunner():
+def queryRunner(launcherQueryStringList):
     threads = []
 
-    with ThreadPoolExecutor(max_workers=20) as executor:
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        for i in range(len(launcherQueryStringList)):
+            file_name = uuid.uuid1()
+            threads.append(executor.submit(sendRequest,launcherQueryStringList[i]))
+        
+        for task in as_completed(threads):
+            print(task.result())
 
 if __name__ == "__main__":
     main()
