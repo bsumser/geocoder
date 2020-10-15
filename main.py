@@ -55,10 +55,14 @@ def getAddress(json_data):    #Get the address from json response from API
     return json_data['StreetAddresses'][0]['StreetAddress']
 
 def sendRequest(completeQuery):
-    response = requests.get(completeQuery)
-    responseCode = response.status_code
-    json_data = json.loads(response.text)
-    logging.info("getUserInput() request URL is: %s \n Status Code:%i",completeQuery,responseCode)
+    # try/catch block for requests error handling
+    try:
+        response = requests.get(completeQuery)
+        responseCode = response.status_code
+        json_data = json.loads(response.text)
+        logging.info("getUserInput() request URL is: %s \n Status Code:%i",completeQuery,responseCode)
+    except requests.exceptions.RequestException as e:
+        return e
     return(json_data)
 
 def getUserInput(coordinate):
