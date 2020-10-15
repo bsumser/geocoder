@@ -14,8 +14,8 @@ def main():
     path = "data/sample.gpx"
     coordinateList = gpxParser(path)    #parse sample file at path to list of points
     queryFields = getUserInput(coordinateList[0])   #pass coordinate point to from query fields for API
-    # json_data = sendRequest(queryFields)   #send request to API with query fields
-    # address = getAddress(json_data)    #get address field from json from request to API
+    json_data = sendRequest(queryFields)   #send request to API with query fields
+    address = getAddress(json_data)    #get address field from json from request to API
     geocodeCoordinate(coordinateList[0], coordinateList[1])     #get heading from comparison of start and end points
     getDistance(coordinateList[0], coordinateList[1]) 
     #addressListTest = addressParser(coordinateList)
@@ -41,17 +41,6 @@ def parseArgs():
     else:
         print("no arguments selected")
 
-    address = np.array([' main st ', ' main st ', ' main st ', ' bob ave ',
-                        ' bob ave ', ' bob ave ', ' sam ', ' sam ', ' tim rd ',
-                        ' tim rd ', ' tim rd ', ' tim rd '])
-
-    key = np.array([], dtype=int)  # initializes empty array using numpy library
-
-    start = 0  # starting element to make the comparison
-    n = (len(address) - 1)  # n = number of total elements in the address
-    end = n  # ending element to make the comparison
-    key_points(start, end, key, address)
-
 def getAddress(json_data):    #Get the address from json response from API
     return json_data['StreetAddresses'][0]['StreetAddress']
 
@@ -59,7 +48,9 @@ def sendRequest(queryFields):
     httpClient = "https://geoservices.tamu.edu/Services/ReverseGeocoding/WebService/v04_01/HTTP/default.aspx?"
     completeQuery = httpClient + queryFields
     response = requests.get(completeQuery)
+    responseCode = response.status_code
     json_data = json.loads(response.text)
+    logging.info("getUserInput() request URL is: %s \n Status Code:%i",completeQuery,responseCode)
     return(json_data)
 
 def getUserInput(coordinate):
@@ -71,7 +62,7 @@ def getUserInput(coordinate):
     notStore = "&notStore=false"
     version = "&version=4.10"
     queryFields = lat + lon + state + apikey + format + notStore + version
-    logging.info("getUserInput() query is: %s",queryFields)
+    logging.info("",)
     return queryFields
 
 def getBearing(endPoint, startPoint):     #Function to determine bearing
