@@ -3,11 +3,12 @@ import json
 import gpxpy
 import gpxpy.gpx
 import numpy as np
-from numpy import arctan2, sin, cos, arccos, degrees, radians
-import numpy as np
 import math
 import logging
 import argparse
+import uuid
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from numpy import arctan2, sin, cos, arccos, degrees, radians
 
 def main():
     parseArgs()
@@ -226,6 +227,11 @@ def multiThreadQueryMaker(coordinateList):
         launcherQueryStringList.append(completeQuery)
 
     return launcherQueryStringList
+
+def queryRunner():
+    threads = []
+
+    with ThreadPoolExecutor(max_workers=20) as executor:
 
 if __name__ == "__main__":
     main()
