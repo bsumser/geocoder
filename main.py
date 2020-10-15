@@ -16,8 +16,8 @@ def main():
     coordinateList = gpxParser(path)    #parse sample file at path to list of points
     queryFields = getUserInput(coordinateList[0])   #pass coordinate point to from query fields for API
     json_data = sendRequest(queryFields)   #send request to API with query fields
-    # address = getAddress(json_data)    #get address field from json from request to API
-    # geocodeCoordinate(coordinateList[0], coordinateList[1])     #get heading from comparison of start and end points
+    address = getAddress(json_data)    #get address field from json from request to API
+    geocodeCoordinate(coordinateList[0], coordinateList[1])     #get heading from comparison of start and end points
     getDistance(coordinateList[0], coordinateList[1]) 
     #addressListTest = addressParser(coordinateList)
 
@@ -28,7 +28,7 @@ def main():
     print(queryList)
 
     # run the query list
-    queryRunner(queryList)
+    # queryRunner(queryList)
 
     address = np.array([' main st ', ' main st ', ' main st ', ' bob ave ',
                         ' bob ave ', ' bob ave ', ' sam ', ' sam ', ' tim rd ',
@@ -56,14 +56,11 @@ def getAddress(json_data):    #Get the address from json response from API
 
 def sendRequest(completeQuery):
     # try/catch block for requests error handling
-    try:
-        response = requests.get(completeQuery)
-        responseCode = response.status_code
-        json_data = json.loads(response.text)
-        logging.info("getUserInput() request URL is: %s \n Status Code:%i",completeQuery,responseCode)
-    except requests.exceptions.RequestException as e:
-        return e
-    return(json_data)
+    response = requests.get(completeQuery)
+    responseCode = response.status_code
+    json_data = json.loads(response.text)
+    logging.info("sendRequest() request URL is: %s \n Status Code:%i",completeQuery,responseCode)
+    return json_data
 
 def getUserInput(coordinate):
     httpClient = "https://geoservices.tamu.edu/Services/ReverseGeocoding/WebService/v04_01/HTTP/default.aspx?"
