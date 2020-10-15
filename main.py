@@ -16,6 +16,8 @@ def main():
     geocodeCoordinate(coordinateList[0], coordinateList[1])     #get heading from comparison of start and end points
     addressListTest = addressParser(coordinateList)
 
+    print(addressListTest)
+
     address = np.array([' main st ', ' main st ', ' main st ', ' bob ave ',
                         ' bob ave ', ' bob ave ', ' sam ', ' sam ', ' tim rd ',
                         ' tim rd ', ' tim rd ', ' tim rd '])
@@ -190,8 +192,9 @@ def addressParser(coordinateList):
 
     for i in range(len(coordinateList)):
         address = geocodeCoordinate(coordinateList[i],coordinateList[i])
+        address = address.split(" ",1)[1]
         addressStringList = np.append(addressStringList, address)
-        print(addressStringList[i])
+        # print(addressStringList[i])
     return addressStringList
 
 if __name__ == "__main__":
