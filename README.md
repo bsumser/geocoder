@@ -39,3 +39,25 @@ python main.py --verbose
 Below is pseudocode for the turn-by-turn algorithm that geocode utilizes to determine
 at which points in the route turns occur.
 ![Alt text](img/equation.svg?raw=true "Algorithm")
+
+<!---
+\begin{split}
+N = \text{# of address's elements}\\
+S = \text{index of starting element}\\
+E = \text{index of ending element}\\
+M = \text{Midpoint between S & E}\\
+\text{def key_points(S,E)}:\\
+&M = \left \lceil{\frac{E-S}{2}}\right \rceil + S\\
+&E = M\\
+&if \text{ }arr[S] = arr[N]\\
+&&\text{points_arr.append[arr[S]]}\\
+&&\text{return}\\
+&if\text{ }arr[S] = arr[M]\\
+&&S = M + 1\\
+&&\text{points_arr.append[arr[M]]}\\
+&&E = N\\
+&&\text{key_points(S,E)}\\
+&else\\
+&&\text{key_points(S,E)}\\
+\end{split}
+-->
