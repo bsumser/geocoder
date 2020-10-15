@@ -38,3 +38,4 @@ python main.py --verbose
 ## Turn-by-turn Algorithm
 Below is pseudocode for the turn-by-turn algorithm that geocode utilizes to determine
 at which points in the route turns occur.
+![Alt text](img/equation.svg?raw=true "Algorithm")
