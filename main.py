@@ -141,7 +141,6 @@ def gpxParser(path):
         for segment in track.segments:
             for point in segment.points:
                 coordinateList.append(point)
-    print(coordinateList[0].latitude)
     return coordinateList
 
 def key_points(start, end, key, address):
@@ -191,12 +190,20 @@ def print_key(key, address): # key is the array holding the elements
         i = i+1
 
 def addressParser(coordinateList):
+    # numpy array of python objects to feed into key_points()
     addressStringList = np.array([],dtype=object)
-    print(coordinateList[0])
 
+    # loop through coordinateList and extract address from each point
     for i in range(len(coordinateList)):
         address = geocodeCoordinate(coordinateList[i],coordinateList[i])
+
+        # shave off the number part of the address
         address = address.split(" ",1)[1]
+
+        # verbose information about address produced
+        logging.info("adding address:%s to addressStringList")
+
+        # append address to addressStringList
         addressStringList = np.append(addressStringList, address)
     return addressStringList
 
