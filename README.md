@@ -25,16 +25,16 @@ pip install numpy
 ## Usage
 Once you have the repo cloned, and have sorted out any dependency issues, simply run:
 ```
-python main.py
+python3 main.py
 ```
 You can also run the program to produce more output information for functions
 by typing 
 ```
-python main.py -v
+python3 main.py -v
 ```
 or
 ```
-python main.py --verbose
+python3 main.py --verbose
 ```
 ## Turn-by-turn Algorithm
 Below is pseudocode for the turn-by-turn algorithm that geocode utilizes to determine at which points in the route turns occur.
