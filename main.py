@@ -43,8 +43,10 @@ def main():
     n = (len(address) - 1)  # n = number of total elements in the address
     end = n  # ending element to make the comparison
     keyArray = key_points(start, end, key, address)
-    print('test2 for key', keyArray)
-    print(key)
+    array_key = np.array([keyArray[2]], dtype=int)
+
+    print("\n keyArray as whole: ", keyArray, '\n')
+
     turnDetector(keyArray, address, coordinateList)
     
 def parseArgs():
@@ -174,28 +176,28 @@ def key_points(start, end, key, address):
         # print('case1')
         key = np.append(key, n)
         print_key(key, address)
-        print('test for key', key)
-        return start, end, key, address
+        return key
 
     # 2 midpoint doesn't match starting and starting point is next to end point
     if address[start] != address[midpoint] and (start+1) == end:
             key = np.append(key, start)
             start = start+1
             end = n
-            key_points(start, end, key, address)
+            return key_points(start, end, key, address)
 
     # 3 midpoint doesn't match starting and starting point is not next to end point
     if address[start] != address[midpoint] and (start+1) != end:
         # print('case3')
-        key_points(start, end, key, address)
+        return key_points(start, end, key, address)
 
     # 4 starting point matches midpoint
     if address[start] == address[midpoint]:
         # print('case4')
         start = midpoint
         end = n
-        key_points(start,end, key, address)
+        return key_points(start,end, key, address)
 
+    # return start, end, key, address
 
 def print_key(key, address): # key is the array holding the elements
 
