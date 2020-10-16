@@ -18,7 +18,7 @@ def main():
     #json_data = sendRequest(queryFields)   #send request to API with query fields
     #address = getAddress(json_data)    #get address field from json from request to API
     #geocodeCoordinate(coordinateList[0], coordinateList[1])     #get heading from comparison of start and end points
-    getDistance(coordinateList[0], coordinateList[1]) 
+    getDistance(coordinateList[0], coordinateList[1])
 
     for i in range(len(coordinateList) - 2):
         bearingDifCalc(coordinateList[i], coordinateList[i+1], coordinateList[i+2])
@@ -43,7 +43,8 @@ def main():
     n = (len(address) - 1)  # n = number of total elements in the address
     end = n  # ending element to make the comparison
     keyArray = key_points(start, end, key, address)
-    print(keyArray)
+    print('test2 for key', keyArray)
+    print(key)
     turnDetector(keyArray, address, coordinateList)
     
 def parseArgs():
@@ -159,6 +160,7 @@ def gpxParser(path):
                 coordinateList.append(point)
     return coordinateList
 
+
 def key_points(start, end, key, address):
 
     n = (len(address)-1)  # n = number of total elements in the address
@@ -172,7 +174,8 @@ def key_points(start, end, key, address):
         # print('case1')
         key = np.append(key, n)
         print_key(key, address)
-        return key
+        print('test for key', key)
+        return start, end, key, address
 
     # 2 midpoint doesn't match starting and starting point is next to end point
     if address[start] != address[midpoint] and (start+1) == end:
@@ -257,6 +260,7 @@ def bearingDifCalc(startPoint, midPoint, endPoint):
 def turnDetector(turnArray, addressArray, coordinateList):
     # given array of turns point indexes, and matching array of addresses to 
     # array of coordinates, detect what kind of turn happens
+
     print("turn detector")
     for i in turnArray:
         #bearingDifCalc(coordinateList[turnArray[i] - 1],
