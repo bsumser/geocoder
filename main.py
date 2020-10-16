@@ -15,12 +15,12 @@ def main():
     path = "data/sample.gpx"
     coordinateList = gpxParser(path)    #parse sample file at path to list of points
     queryFields = getUserInput(coordinateList[0])   #pass coordinate point to from query fields for API
-    json_data = sendRequest(queryFields)   #send request to API with query fields
+    #json_data = sendRequest(queryFields)   #send request to API with query fields
     #address = getAddress(json_data)    #get address field from json from request to API
     #geocodeCoordinate(coordinateList[0], coordinateList[1])     #get heading from comparison of start and end points
     getDistance(coordinateList[0], coordinateList[1]) 
 
-    for i in range(len(coordinateList)):
+    for i in range(len(coordinateList) - 2):
         bearingDifCalc(coordinateList[i], coordinateList[i+1], coordinateList[i+2])
     #addressListTest = addressParser(coordinateList)
 
@@ -251,6 +251,13 @@ def bearingDifCalc(startPoint, midPoint, endPoint):
     bearingDelta2 = getBearing(endPoint, midPoint)
     totalBearingDelta = bearingDelta2 - bearingDelta1
     logging.info("change in bearing is: %i = %i - %i",totalBearingDelta, bearingDelta2, bearingDelta1)
+
+def turnDetector(turnArray, addressArray, coordinateList):
+    # given array of turns point indexes, and matching array of addresses to 
+    # array of coordinates, detect what kind of turn happens
+    for i in range(len(turnArray)):
+        bearingDifCalc(coordinateList[turnArray[i] - 1],
+        coordinateList[turnArray[i]], coordinateList[turnArray[i] + 1])
 
 if __name__ == "__main__":
     main()
