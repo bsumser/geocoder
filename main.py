@@ -15,13 +15,13 @@ def main():
     path = "data/sample.gpx"
     coordinateList = gpxParser(path)    #parse sample file at path to list of points
     queryFields = getUserInput(coordinateList[0])   #pass coordinate point to from query fields for API
-    #json_data = sendRequest(queryFields)   #send request to API with query fields
+    testQuery = "https://geoservices.tamu.edu/Services/ReverseGeocoding/WebService/v04_01/HTTP/default.aspx?lat=30.610487&lon=-96.327766&state=tx&apikey=1553f4ca4c3e4e84a4c22adc3aae1886&format=json&notStore=false&version=4.10"
+    json_data = sendRequest(queryFields)   #send request to API with query fields
+    print(json_data)
     #address = getAddress(json_data)    #get address field from json from request to API
     #geocodeCoordinate(coordinateList[0], coordinateList[1])     #get heading from comparison of start and end points
     getDistance(coordinateList[0], coordinateList[1])
 
-    for i in range(len(coordinateList) - 2):
-        bearingDifCalc(coordinateList[i], coordinateList[i+1], coordinateList[i+2])
     #addressListTest = addressParser(coordinateList)
 
     # test multiThreadQueryMaker
@@ -64,20 +64,22 @@ def sendRequest(completeQuery):
     response = requests.get(completeQuery)
     responseCode = response.status_code
     json_data = json.loads(response.text)
-    #logging.info("sendRequest() request URL is: %s \n Status Code:%i",completeQuery,responseCode)
+    logging.info("sendRequest() request URL is: %s \n Status Code:%i",completeQuery,responseCode)
     return json_data
 
 def getUserInput(coordinate):
+    coordLat = str(coordinate.latitude)
+    coordLong = str(coordinate.longitude)
     httpClient = "https://geoservices.tamu.edu/Services/ReverseGeocoding/WebService/v04_01/HTTP/default.aspx?"
-    lat = "lat=" + str(coordinate.latitude)
-    lon = "&lon=" + str(coordinate.longitude)
+    lat = "lat=-123.086754"
+    lon = "&lon=44.052071"
     state = "&state=or"
     apikey = "&apikey=1553f4ca4c3e4e84a4c22adc3aae1886"
-    format = "&format=json"
+    formatT = "&format=json"
     notStore = "&notStore=false"
     version = "&version=4.10"
-    completeQuery = httpClient + lat + lon + state + apikey + format + notStore + version
-    #logging.info("Complete query: %s",completeQuery)
+    completeQuery = httpClient + lat + lon + state + apikey + formatT + notStore + version
+    logging.info("Complete query: %s",completeQuery)
     return completeQuery
 
 def getBearing(endPoint, startPoint):     #Function to determine bearing
