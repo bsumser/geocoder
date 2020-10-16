@@ -43,9 +43,6 @@ def main():
     n = (len(address) - 1)  # n = number of total elements in the address
     end = n  # ending element to make the comparison
     keyArray = key_points(start, end, key, address)
-    array_key = np.array([keyArray[2]], dtype=int)
-
-    print("\n keyArray as whole: ", keyArray, '\n')
 
     turnDetector(keyArray, address, coordinateList)
     
