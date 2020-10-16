@@ -263,12 +263,15 @@ def turnDetector(turnArray, addressArray, coordinateList):
     # given array of turns point indexes, and matching array of addresses to 
     # array of coordinates, detect what kind of turn happens
 
+    for i in turnArray:
+        print(i)
+
     print("turn detector")
     for i in turnArray:
-        #bearingDifCalc(coordinateList[turnArray[i] - 1],
-        #coordinateList[turnArray[i]], coordinateList[turnArray[i] + 1])
         logging.info("Turn detected at addressArray index %i at address %s at coordinate(%s)",
-        turnArray[i],addressArray[turnArray[i]],coordinateList[turnArray[i]])
+        i,addressArray[i],coordinateList[i])
+        bearingDifCalc(coordinateList[i - 1],
+        coordinateList[i], coordinateList[i + 1])
 
 if __name__ == "__main__":
     main()
