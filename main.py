@@ -42,7 +42,9 @@ def main():
     start = 0  # starting element to make the comparison
     n = (len(address) - 1)  # n = number of total elements in the address
     end = n  # ending element to make the comparison
-    key_points(start, end, key, address)
+    keyArray = key_points(start, end, key, address)
+    print(keyArray)
+    turnDetector(keyArray, address, coordinateList)
     
 def parseArgs():
     parser = argparse.ArgumentParser()
@@ -170,7 +172,7 @@ def key_points(start, end, key, address):
         # print('case1')
         key = np.append(key, n)
         print_key(key, address)
-        exit()
+        return key
 
     # 2 midpoint doesn't match starting and starting point is next to end point
     if address[start] != address[midpoint] and (start+1) == end:
@@ -255,9 +257,12 @@ def bearingDifCalc(startPoint, midPoint, endPoint):
 def turnDetector(turnArray, addressArray, coordinateList):
     # given array of turns point indexes, and matching array of addresses to 
     # array of coordinates, detect what kind of turn happens
-    for i in range(len(turnArray)):
-        bearingDifCalc(coordinateList[turnArray[i] - 1],
-        coordinateList[turnArray[i]], coordinateList[turnArray[i] + 1])
+    print("turn detector")
+    for i in turnArray:
+        #bearingDifCalc(coordinateList[turnArray[i] - 1],
+        #coordinateList[turnArray[i]], coordinateList[turnArray[i] + 1])
+        logging.info("Turn detected at addressArray index %i at address %s at coordinate(%s)",
+        turnArray[i],addressArray[turnArray[i]],coordinateList[turnArray[i]])
 
 if __name__ == "__main__":
     main()
