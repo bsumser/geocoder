@@ -25,13 +25,13 @@ def main():
     #addressListTest = addressParser(coordinateList)
 
     # test multiThreadQueryMaker
-    # queryList = multiThreadQueryMaker(coordinateList)
+    queryList = multiThreadQueryMaker(coordinateList)
 
     # check queryList
     # print(queryList)
 
     # run the query list
-    # queryRunner(queryList)
+    queryRunner(queryList)
 
     address = np.array([' main st ', ' main st ', ' main st ', ' bob ave ',
                         ' bob ave ', ' bob ave ', ' sam ', ' sam ', ' tim rd ',
@@ -71,14 +71,15 @@ def getUserInput(coordinate):
     coordLat = str(coordinate.latitude)
     coordLong = str(coordinate.longitude)
     httpClient = "https://geoservices.tamu.edu/Services/ReverseGeocoding/WebService/v04_01/HTTP/default.aspx?"
-    lat = "lat=-123.086754"
-    lon = "&lon=44.052071"
-    state = "&state=or"
+    lat = "lat="
+    lon = "&lon="
+    lat = lat + coordLat
+    lon = lon + coordLong
     apikey = "&apikey=1553f4ca4c3e4e84a4c22adc3aae1886"
     formatT = "&format=json"
     notStore = "&notStore=false"
     version = "&version=4.10"
-    completeQuery = httpClient + lat + lon + state + apikey + formatT + notStore + version
+    completeQuery = httpClient + lat + lon + apikey + formatT + notStore + version
     logging.info("Complete query: %s",completeQuery)
     return completeQuery
 
