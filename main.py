@@ -20,9 +20,6 @@ def main():
     # test multiThreadQueryMaker
     queryList = multiThreadQueryMaker(coordinateList)
 
-    # check queryList
-    print(queryList)
-
     # run the query list to get the address list
     addressListTest = queryRunner(queryList)
 
@@ -269,6 +266,7 @@ def bearingDifCalc(startPoint, midPoint, endPoint):
     bearingDelta2 = getBearing(endPoint, midPoint)
     totalBearingDelta = bearingDelta2 - bearingDelta1
     print("change in bearing is: {0} = {1} - {2}".format(totalBearingDelta, bearingDelta2, bearingDelta1))
+    return totalBearingDelta
 
 def turnDetector(turnArray, addressArray, coordinateList):
     # given array of turns point indexes, and matching array of addresses to 
@@ -279,11 +277,18 @@ def turnDetector(turnArray, addressArray, coordinateList):
 
     print("turn detector")
     for i in range(len(turnArray)):
-        print("Turn detected at addressArray index {0} at address {1} at coordinate({2})".format
-        (turnArray[i],addressArray[turnArray[i]],coordinateList[turnArray[i]]))
         if turnArray[i] < len(coordinateList):
-            bearingDifCalc(coordinateList[turnArray[i] - 1],
+
+            # calculate change in bearing between turn point, and its previous and next point
+            bearingDelta = bearingDifCalc(coordinateList[turnArray[i] - 1],
             coordinateList[turnArray[i]], coordinateList[turnArray[i] + 1])
+
+            # set the turn direction depending on change in bearing
+            if bearingDelta < 0: turn = "Left" 
+            elif bearingDelta > 0: turn = "Right"
+            
+            print("{0} turn detected of bearingDelta: {1} at addressArray index {2} at address {3} at coordinate({4})".format
+            (turn,bearingDelta,turnArray[i],addressArray[turnArray[i]],coordinateList[turnArray[i]]))
 
 if __name__ == "__main__":
     main()
