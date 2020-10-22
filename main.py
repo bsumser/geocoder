@@ -23,8 +23,8 @@ def main():
     # check queryList
     print(queryList)
 
-    # run the query list
-    queryRunner(queryList)
+    # run the query list to get the address list
+    addressListTest = queryRunner(queryList)
 
     address = np.array([' main st ', ' main st ', ' main st ', ' bob ave ',
                         ' bob ave ', ' bob ave ', ' sam ', ' sam ', ' tim rd ',
@@ -33,18 +33,20 @@ def main():
     key = np.array([], dtype=int)  # initializes empty array using numpy library
 
     start = 0  # starting element to make the comparison
-    n = (len(address) - 1)  # n = number of total elements in the address
+    n = (len(addressListTest) - 1)  # n = number of total elements in the address
     end = n  # ending element to make the comparison
     keyArray = key_points(start, end, key, addressListTest)
 
-    turnDetector(keyArray, address, coordinateList)
+    turnDetector(keyArray, addressListTest, coordinateList)
     
 def parseArgs():
     parser = argparse.ArgumentParser()
     parser.add_argument("-v","--verbose", help="increases output verbosity", action="store_true")
     args = parser.parse_args()
     if (args.verbose):
-        logging.basicConfig(level=logging.INFO)
+        FORMAT = "[%(lineno)s - %(funcName)20s() ] %(message)s"
+        logging.basicConfig(format=FORMAT)
+        logging.basicConfig(filename = "logs/example.log",level=logging.INFO)
         print("-v or --verbose flag used, logging mode set to info")
     else:
         print("no arguments selected")
@@ -57,7 +59,7 @@ def sendRequest(completeQuery):
     response = requests.get(completeQuery)
     responseCode = response.status_code
     json_data = json.loads(response.text)
-    #logging.info("sendRequest() request URL is: %s \n Status Code:%i",completeQuery,responseCode)
+    logging.info("sendRequest() request URL is: %s \n Status Code:%i",completeQuery,responseCode)
     return json_data
 
 def getUserInput(coordinate):
@@ -244,30 +246,30 @@ def threadAddressFiller(index, query):
     
     return addressList 
 
-def testFunction(index):
-    return index
-
 def queryRunner(launcherQueryStringList):
     addressList = [None] * len(launcherQueryStringList)
     futures = [None] * len(launcherQueryStringList)
 
-    with ThreadPoolExecutor(max_workers=20) as executor:
+    with ThreadPoolExecutor(max_workers=10) as executor:
         for i in range(len(launcherQueryStringList)):
             file_name = uuid.uuid1()
             futures[i] = executor.submit(sendRequest, launcherQueryStringList[i])
     for i in range(len(futures)):
         addressList[i] = getAddress(futures[i].result())
+    
+        logging.info("addressList[%i] removing numbers",i)
         
         # shave off the number part of the address
         addressList[i] = addressList[i].split(" ",1)[1]
 
     print(addressList)
+    return addressList
 
 def bearingDifCalc(startPoint, midPoint, endPoint):
     bearingDelta1 = getBearing(midPoint, startPoint)
     bearingDelta2 = getBearing(endPoint, midPoint)
     totalBearingDelta = bearingDelta2 - bearingDelta1
-    logging.info("change in bearing is: %i = %i - %i",totalBearingDelta, bearingDelta2, bearingDelta1)
+    print("change in bearing is: {0} = {1} - {2}".format(totalBearingDelta, bearingDelta2, bearingDelta1))
 
 def turnDetector(turnArray, addressArray, coordinateList):
     # given array of turns point indexes, and matching array of addresses to 
@@ -277,11 +279,12 @@ def turnDetector(turnArray, addressArray, coordinateList):
         print(i)
 
     print("turn detector")
-    for i in turnArray:
-        logging.info("Turn detected at addressArray index %i at address %s at coordinate(%s)",
-        i,addressArray[i],coordinateList[i])
-        bearingDifCalc(coordinateList[i - 1],
-        coordinateList[i], coordinateList[i + 1])
+    for i in range(len(turnArray)):
+        print("Turn detected at addressArray index {0} at address {1} at coordinate({2})".format
+        (turnArray[i],addressArray[turnArray[i]],coordinateList[turnArray[i]]))
+        if i is not range(len(turnArray)):
+            bearingDifCalc(coordinateList[turnArray[i] - 1],
+            coordinateList[turnArray[i]], coordinateList[turnArray[i] + 1])
 
 if __name__ == "__main__":
     main()
