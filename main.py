@@ -40,6 +40,7 @@ def main():
 def parseArgs():
     parser = argparse.ArgumentParser()
     parser.add_argument("-v","--verbose", help="increases output verbosity", action="store_true")
+    parser.add_argument("-d","--debug", help="logs function info to log file", action="store_true")
     args = parser.parse_args()
     t = time.time()
     t = str(t)
@@ -51,6 +52,12 @@ def parseArgs():
         FORMAT = "[%(lineno)s - %(funcName)20s() ] %(message)s"
         logging.basicConfig(format=FORMAT, filename=log,level=logging.INFO)
         print("-v or --verbose flag used, logging mode set to info")
+    if (args.debug):
+        f= open(log,"w+")
+        f.close()
+        FORMAT = "[%(lineno)s - %(funcName)20s() ] %(message)s"
+        logging.basicConfig(format=FORMAT, filename=log,level=logging.DEBUG)
+        print("-d or --debug flag used, logging mode set to debug")
     else:
         print("no arguments selected")
 
@@ -62,7 +69,7 @@ def sendRequest(completeQuery):
     response = requests.get(completeQuery)
     responseCode = response.status_code
     json_data = json.loads(response.text)
-    logging.info("sendRequest() request URL is: %s \n Status Code:%i",completeQuery,responseCode)
+    logging.debug("sendRequest() request URL is: %s \n Status Code:%i",completeQuery,responseCode)
     return json_data
 
 def getUserInput(coordinate):
@@ -78,7 +85,7 @@ def getUserInput(coordinate):
     notStore = "&notStore=false"
     version = "&version=4.10"
     completeQuery = httpClient + lat + lon + apikey + formatT + notStore + version
-    logging.info("Complete query: %s",completeQuery)
+    logging.debug("Complete query: %s",completeQuery)
     return completeQuery
 
 def getBearing(endPoint, startPoint):     #Function to determine bearing
@@ -90,7 +97,7 @@ def getBearing(endPoint, startPoint):     #Function to determine bearing
     Y = (cos(startLatitude) * sin(endLatitude)) - (sin(startLatitude) * cos(endLatitude) * cos((endLongitude - startLongitude)))
     bearingDegrees = degrees(arctan2(X,Y))
     bearingDegrees = (bearingDegrees + 360) % 360
-    logging.info("Bearing in degrees is %i", bearingDegrees)
+    logging.debug("Bearing in degrees is %i", bearingDegrees)
     return bearingDegrees
 
 def getCompassDirection(bearingDegrees):
@@ -130,7 +137,7 @@ def getDistance(endPoint, startPoint):  #distance between coordinates using have
         unit = "feet"
 
     distanceString = " distance from previous point is {0} {1}".format(distance, unit)
-    logging.info("%s",distanceString)
+    logging.debug("%s",distanceString)
     return distanceString
 
 def geocodeCoordinate(endPoint, startPoint):
@@ -144,7 +151,7 @@ def geocodeCoordinate(endPoint, startPoint):
     json_data = sendRequest(queryFields)
     address = getAddress(json_data)
     distance = getDistance(endPoint, startPoint)
-    logging.info("Location is (%i,%i)",endLatitude, endLongitude)
+    logging.debug("Location is (%i,%i)",endLatitude, endLongitude)
     return address
 
 
@@ -220,7 +227,7 @@ def addressParser(coordinateList):
         address = address.split(" ",1)[1]
 
         # verbose information about address produced
-        logging.info("adding address:%s to addressStringList", address)
+        logging.debug("adding address:%s to addressStringList", address)
 
         # append address to addressStringList
         addressStringList = np.append(addressStringList, address)
@@ -230,7 +237,7 @@ def multiThreadQueryMaker(coordinateList):
     launcherQueryStringList = []
 
     for i in range(len(coordinateList)):
-        logging.info("calling getUserInput on coordinateList index %i, point:(%i,%i)",
+        logging.debug("calling getUserInput on coordinateList index %i, point:(%i,%i)",
         i, coordinateList[i].latitude,coordinateList[i].longitude)
         # convert coordinate to query parameters
         completeQuery = getUserInput(coordinateList[i])
@@ -260,12 +267,12 @@ def queryRunner(launcherQueryStringList):
     for i in range(len(futures)):
         addressList[i] = getAddress(futures[i].result())
     
-        logging.info("addressList[%i] removing numbers",i)
+        logging.debug("addressList[%i] removing numbers",i)
         
         # shave off the number part of the address
         addressList[i] = addressList[i].split(" ",1)[1]
 
-    print(addressList)
+    logging.debug("address list is: ",addressList)
     return addressList
 
 def bearingDifCalc(startPoint, midPoint, endPoint):
