@@ -14,13 +14,6 @@ def main():
     parseArgs()
     path = "data/sample.gpx"
     coordinateList = gpxParser(path)    #parse sample file at path to list of points
-    queryFields = getUserInput(coordinateList[0])   #pass coordinate point to from query fields for API
-    testQuery = "https://geoservices.tamu.edu/Services/ReverseGeocoding/WebService/v04_01/HTTP/default.aspx?lat=30.610487&lon=-96.327766&state=tx&apikey=1553f4ca4c3e4e84a4c22adc3aae1886&format=json&notStore=false&version=4.10"
-    json_data = sendRequest(queryFields)   #send request to API with query fields
-    print(json_data)
-    #address = getAddress(json_data)    #get address field from json from request to API
-    #geocodeCoordinate(coordinateList[0], coordinateList[1])     #get heading from comparison of start and end points
-    getDistance(coordinateList[0], coordinateList[1])
 
     #addressListTest = addressParser(coordinateList)
 
@@ -28,7 +21,7 @@ def main():
     queryList = multiThreadQueryMaker(coordinateList)
 
     # check queryList
-    # print(queryList)
+    print(queryList)
 
     # run the query list
     queryRunner(queryList)
@@ -42,7 +35,7 @@ def main():
     start = 0  # starting element to make the comparison
     n = (len(address) - 1)  # n = number of total elements in the address
     end = n  # ending element to make the comparison
-    keyArray = key_points(start, end, key, address)
+    keyArray = key_points(start, end, key, addressListTest)
 
     turnDetector(keyArray, address, coordinateList)
     
@@ -64,7 +57,7 @@ def sendRequest(completeQuery):
     response = requests.get(completeQuery)
     responseCode = response.status_code
     json_data = json.loads(response.text)
-    logging.info("sendRequest() request URL is: %s \n Status Code:%i",completeQuery,responseCode)
+    #logging.info("sendRequest() request URL is: %s \n Status Code:%i",completeQuery,responseCode)
     return json_data
 
 def getUserInput(coordinate):
@@ -222,7 +215,7 @@ def addressParser(coordinateList):
         address = address.split(" ",1)[1]
 
         # verbose information about address produced
-        logging.info("adding address:%s to addressStringList")
+        logging.info("adding address:%s to addressStringList", address)
 
         # append address to addressStringList
         addressStringList = np.append(addressStringList, address)
@@ -242,16 +235,30 @@ def multiThreadQueryMaker(coordinateList):
 
     return launcherQueryStringList
 
-def queryRunner(launcherQueryStringList):
-    threads = []
+def threadAddressFiller(index, query):
+    address = sendRequest(query) #send the request and get json_data
 
-    with ThreadPoolExecutor(max_workers=10) as executor:
+    address = address.split(" ",1)[1] #split off the number part of the address
+
+    addressList.insert(index, address) #save the address to the list
+    
+    return addressList 
+
+def testFunction(index):
+    return index
+
+def queryRunner(launcherQueryStringList):
+    addressList = [None] * len(launcherQueryStringList)
+    futures = [None] * len(launcherQueryStringList)
+
+    with ThreadPoolExecutor(max_workers=20) as executor:
         for i in range(len(launcherQueryStringList)):
             file_name = uuid.uuid1()
-            threads.append(executor.submit(sendRequest,launcherQueryStringList[i]))
-        
-        for task in as_completed(threads):
-            print(task.result())
+            futures[i] = executor.submit(sendRequest, launcherQueryStringList[i])
+    for i in range(len(futures)):
+        addressList[i] = getAddress(futures[i].result())
+
+    print(addressList)
 
 def bearingDifCalc(startPoint, midPoint, endPoint):
     bearingDelta1 = getBearing(midPoint, startPoint)
