@@ -257,6 +257,9 @@ def queryRunner(launcherQueryStringList):
             futures[i] = executor.submit(sendRequest, launcherQueryStringList[i])
     for i in range(len(futures)):
         addressList[i] = getAddress(futures[i].result())
+        
+        # shave off the number part of the address
+        addressList[i] = addressList[i].split(" ",1)[1]
 
     print(addressList)
 
