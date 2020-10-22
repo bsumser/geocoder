@@ -137,8 +137,9 @@ def getDistance(endPoint, startPoint):  #distance between coordinates using have
         unit = "feet"
 
     distanceString = " distance from previous point is {0} {1}".format(distance, unit)
+    distanceReturn = "{0} {1}".format(distance, unit)
     logging.debug("%s",distanceString)
-    return distanceString
+    return distanceReturn
 
 def geocodeCoordinate(endPoint, startPoint):
     # TODO: perhaps change this function to be overload, so you could call with one coordinate
@@ -279,17 +280,30 @@ def bearingDifCalc(startPoint, midPoint, endPoint):
     bearingDelta1 = getBearing(midPoint, startPoint)
     bearingDelta2 = getBearing(endPoint, midPoint)
     totalBearingDelta = bearingDelta2 - bearingDelta1
-    print("change in bearing is: {0} = {1} - {2}".format(totalBearingDelta, bearingDelta2, bearingDelta1))
+    logging.debug("change in bearing is: %i = %i - %i",totalBearingDelta, bearingDelta2, bearingDelta1)
     return totalBearingDelta
 
 def turnDetector(turnArray, addressArray, coordinateList):
     # given array of turns point indexes, and matching array of addresses to 
     # array of coordinates, detect what kind of turn happens
 
+    # list to hold directions
+    directions = []
+
+    # first direction
+    start = "0 miles Start at " + addressArray[0] 
+
+    # append to directions
+    directions.append(start)
+
     for i in turnArray:
         print(i)
 
     print("turn detector")
+    
+    # print first direction before loop
+    print(directions[0])
+    
     for i in range(len(turnArray)):
         if turnArray[i] < len(coordinateList):
 
@@ -297,12 +311,19 @@ def turnDetector(turnArray, addressArray, coordinateList):
             bearingDelta = bearingDifCalc(coordinateList[turnArray[i] - 1],
             coordinateList[turnArray[i]], coordinateList[turnArray[i] + 1])
 
+            distance = getDistance(coordinateList[turnArray[i]], coordinateList[turnArray[i - 1]])
+
             # set the turn direction depending on change in bearing
             if bearingDelta < 0: turn = "Left" 
             elif bearingDelta > 0: turn = "Right"
             
-            print("{0} turn detected of bearingDelta: {1} at addressArray index {2} at address {3} at coordinate({4})".format
-            (turn,bearingDelta,turnArray[i],addressArray[turnArray[i]],coordinateList[turnArray[i]]))
+            #print("{0} turn detected of bearingDelta: {1} at addressArray index {2} at address {3} at coordinate({4})".format
+            #(turn,bearingDelta,turnArray[i],addressArray[turnArray[i]],coordinateList[turnArray[i]]))
+
+            direction = distance + " " + turn  + " " + "on " + addressArray[turnArray[i]]
+            print(direction)
+    
+    print(directions)
 
 if __name__ == "__main__":
     main()
