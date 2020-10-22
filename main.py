@@ -4,6 +4,7 @@ import gpxpy
 import gpxpy.gpx
 import numpy as np
 import math
+import time
 import logging
 import argparse
 import uuid
@@ -40,9 +41,15 @@ def parseArgs():
     parser = argparse.ArgumentParser()
     parser.add_argument("-v","--verbose", help="increases output verbosity", action="store_true")
     args = parser.parse_args()
+    t = time.time()
+    t = str(t)
+    log = "logs/log-" + t + ".txt"
+    print(log)
     if (args.verbose):
+        f= open(log,"w+")
+        f.close()
         FORMAT = "[%(lineno)s - %(funcName)20s() ] %(message)s"
-        logging.basicConfig(format=FORMAT, filename="logs/example.log",level=logging.INFO)
+        logging.basicConfig(format=FORMAT, filename=log,level=logging.INFO)
         print("-v or --verbose flag used, logging mode set to info")
     else:
         print("no arguments selected")
