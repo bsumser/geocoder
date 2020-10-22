@@ -281,7 +281,7 @@ def turnDetector(turnArray, addressArray, coordinateList):
     for i in range(len(turnArray)):
         print("Turn detected at addressArray index {0} at address {1} at coordinate({2})".format
         (turnArray[i],addressArray[turnArray[i]],coordinateList[turnArray[i]]))
-        if i is not range(len(turnArray)):
+        if turnArray[i] < len(coordinateList):
             bearingDifCalc(coordinateList[turnArray[i] - 1],
             coordinateList[turnArray[i]], coordinateList[turnArray[i] + 1])
 
