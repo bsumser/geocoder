@@ -45,8 +45,7 @@ def parseArgs():
     args = parser.parse_args()
     if (args.verbose):
         FORMAT = "[%(lineno)s - %(funcName)20s() ] %(message)s"
-        logging.basicConfig(format=FORMAT)
-        logging.basicConfig(filename = "logs/example.log",level=logging.INFO)
+        logging.basicConfig(format=FORMAT, filename="logs/example.log",level=logging.INFO)
         print("-v or --verbose flag used, logging mode set to info")
     else:
         print("no arguments selected")
