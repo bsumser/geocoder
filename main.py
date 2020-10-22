@@ -43,7 +43,7 @@ def parseArgs():
     args = parser.parse_args()
     t = time.time()
     t = str(t)
-    log = "logs/log-" + t + ".txt"
+    log = "logs/log-" + t + ".log"
     print(log)
     if (args.verbose):
         f= open(log,"w+")
