@@ -4,6 +4,7 @@ import gpxpy
 import gpxpy.gpx
 import numpy as np
 import math
+import os
 import time
 import logging
 import argparse
@@ -12,13 +13,16 @@ from numpy import arctan2, sin, cos, arccos, degrees, radians
 
 def main():
     parseArgs()
+    #path = input("Enter your gpx file path:")
+    #apiKey = input("Enter your Texas A&M API key:")
     path = "data/run.gpx"
+    apiKey = "1553f4ca4c3e4e84a4c22adc3aae1886"
     
     # parse sample file at path to list of points
     coordinateList = gpxParser(path)
     
     # test multiThreadQueryMaker
-    queryList = multiThreadQueryMaker(coordinateList)
+    queryList = multiThreadQueryMaker(coordinateList, apiKey)
 
     # run the query list to get the address list
     addressListTest = queryRunner(queryList)
@@ -47,8 +51,12 @@ def main():
     
 def parseArgs():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-v","--verbose", help="increases output verbosity", action="store_true")
-    parser.add_argument("-d","--debug", help="logs function info to log file", action="store_true")
+    parser.add_argument("-v","--verbose", help="increases output verbosity", 
+        action="store_true")
+    parser.add_argument("-d","--debug", help="logs function info to log file", 
+        action="store_true")
+    parser.add_argument("-c","--clear", help="clears all log files in logs/", 
+    action="store_true")
     args = parser.parse_args()
     t = time.time()
     t = str(t)
@@ -66,8 +74,18 @@ def parseArgs():
         FORMAT = "[%(lineno)s - %(funcName)20s() ] %(message)s"
         logging.basicConfig(format=FORMAT, filename=log,level=logging.DEBUG)
         print("-d or --debug flag used, logging mode set to debug")
+    if (args.clear):
+        print("-c or --clear flag used, clearing all log files")
+        clearLogs()
     else:
         print("no arguments selected")
+
+def clearLogs():
+    logDir = "logs/"
+    logs = [f for f in os.listdir(logDir) if f.endswith(".log")]
+    for f in logs:
+        os.remove(os.path.join(logDir, f))
+    quit()
 
 def getAddress(json_data):
     """Get the address from json response from API"""
@@ -99,7 +117,7 @@ def sendRequest(completeQuery):
     # Return the json data from request.
     return json_data
 
-def formRequestURL(coordinate):
+def formRequestURL(coordinate, apiKey):
     """Form a request URL from a GPX coordinate as argument.
     
     Parameters: 
@@ -121,8 +139,8 @@ def formRequestURL(coordinate):
     lat = lat + coordLat
     lon = lon + coordLong
 
-    # API key field for request URL
-    apikey = "&apikey=1553f4ca4c3e4e84a4c22adc3aae1886"
+    # API key field for request URL, supplied from the user.
+    completeKey = "&apikey=" + apiKey
     
     # Format of data from request result
     formatT = "&format=json"
@@ -134,7 +152,7 @@ def formRequestURL(coordinate):
     version = "&version=4.10"
     
     # Combine all fields to form complete request URL
-    completeQuery = httpClient + lat + lon + apikey + formatT + notStore + version
+    completeQuery = httpClient + lat + lon + completeKey + formatT + notStore + version
     
     # Debug log of completed query string
     logging.debug("Complete query: %s",completeQuery)
@@ -337,22 +355,22 @@ def print_key(key, address):
     """
 
     if len(key) == 1:
-        print('No turns made')
+        logging.debug("No turns made")
 
     i = 0
-    print('\nYour turns were made at the points of the first column and the streets of the second column: \n')
+    logging.debug('Your turns were made at the points of the first column and the streets of the second column: ')
     while i < len(key):
-        print( key[i], address[key[i]])
+        logging.debug("%s, %s",key[i], address[key[i]])
         i = i+1
 
-def multiThreadQueryMaker(coordinateList):
+def multiThreadQueryMaker(coordinateList, apiKey):
     launcherQueryStringList = []
 
     for i in range(len(coordinateList)):
         logging.debug("calling formRequestURL on coordinateList index %i, point:(%i,%i)",
         i, coordinateList[i].latitude,coordinateList[i].longitude)
         # convert coordinate to query parameters
-        completeQuery = formRequestURL(coordinateList[i])
+        completeQuery = formRequestURL(coordinateList[i], apiKey)
 
         # append the completeQuery to launcherQueryStringList
         launcherQueryStringList.append(completeQuery)
@@ -397,27 +415,23 @@ def turnDetector(turnArray, addressArray, coordinateList):
     # append to directions
     directions.append(start)
 
-    print("turn detector")
-    
     for i in range(len(turnArray)):
         if turnArray[i] < len(coordinateList) - 1:
 
-            # calculate change in bearing between turn point, and its previous and next point
+            # calculate change in bearing between turn point, and 
+            # its previous and next point
             bearingDelta = bearingDifCalc(coordinateList[turnArray[i] - 1],
             coordinateList[turnArray[i]], coordinateList[turnArray[i] + 1])
 
-            distance = getDistance(coordinateList[turnArray[i]], coordinateList[turnArray[i - 1]])
+            distance = getDistance(coordinateList[turnArray[i]],
+            coordinateList[turnArray[i - 1]])
 
             # set the turn direction depending on change in bearing
             if bearingDelta < 0: turn = "Left" 
             elif bearingDelta > 0: turn = "Right"
             
-            #print("{0} turn detected of bearingDelta: {1} at addressArray index {2} at address {3} at coordinate({4})".format
-            #(turn,bearingDelta,turnArray[i],addressArray[turnArray[i]],coordinateList[turnArray[i]]))
-
             direction = distance + " " + turn  + " " + "on " + addressArray[turnArray[i]]
             directions.append(direction)
-            print(direction)
     
     print(*directions, sep='\n-')
 
