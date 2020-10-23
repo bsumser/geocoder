@@ -17,8 +17,6 @@ def main():
     # parse sample file at path to list of points
     coordinateList = gpxParser(path)
     
-    #addressListTest = addressParser(coordinateList)
-
     # test multiThreadQueryMaker
     queryList = multiThreadQueryMaker(coordinateList)
 
@@ -40,7 +38,9 @@ def main():
     
     # ending element to make the comparison
     end = n  
-    
+
+    # Run key_points to get keyArray of turn indexes in addressListTest and
+    # coordinateList 
     keyArray = key_points(start, end, key, addressListTest)
 
     turnDetector(keyArray, addressListTest, coordinateList)
@@ -244,21 +244,6 @@ def getDistance(endPoint, startPoint):
     # Return the distance string
     return distanceReturn
 
-def geocodeCoordinate(endPoint, startPoint):
-    # TODO: perhaps change this function to be overload, so you could call with one coordinate
-    endLatitude = float(endPoint.latitude)
-    endLongitude = float(endPoint.longitude)
-    startLatitude = float(startPoint.latitude)
-    startLongitude = float(startPoint.longitude)
-    queryFields = formRequestURL(endPoint)
-    bearing = getBearing(endPoint, startPoint)
-    json_data = sendRequest(queryFields)
-    address = getAddress(json_data)
-    distance = getDistance(endPoint, startPoint)
-    logging.debug("Location is (%i,%i)",endLatitude, endLongitude)
-    return address
-
-
 def gpxParser(path):
     coordinateList = []
     gpx_file = open(path,'r')
@@ -270,7 +255,6 @@ def gpxParser(path):
             for point in segment.points:
                 coordinateList.append(point)
     return coordinateList
-
 
 def key_points(start, end, key, address):
 
@@ -318,24 +302,6 @@ def print_key(key, address): # key is the array holding the elements
     while i < len(key):
         print( key[i], address[key[i]])
         i = i+1
-
-def addressParser(coordinateList):
-    # numpy array of python objects to feed into key_points()
-    addressStringList = np.array([],dtype=object)
-
-    # loop through coordinateList and extract address from each point
-    for i in range(len(coordinateList)):
-        address = geocodeCoordinate(coordinateList[i],coordinateList[i])
-
-        # shave off the number part of the address
-        address = address.split(" ",1)[1]
-
-        # verbose information about address produced
-        logging.debug("adding address:%s to addressStringList", address)
-
-        # append address to addressStringList
-        addressStringList = np.append(addressStringList, address)
-    return addressStringList
 
 def multiThreadQueryMaker(coordinateList):
     launcherQueryStringList = []
