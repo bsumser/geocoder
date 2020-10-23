@@ -454,14 +454,23 @@ def bearingDifCalc(startPoint, midPoint, endPoint):
     totalBearingDelta = bearingDelta2 - bearingDelta1
 
     # Debug log of the bearing equation
-    logging.debug("change in bearing is: %i = %i - %i",totalBearingDelta, bearingDelta2, bearingDelta1)
+    logging.debug("change in bearing is: %i = %i - %i",totalBearingDelta,
+    bearingDelta2, bearingDelta1)
 
     # Return the calculated change in bearing
     return totalBearingDelta
 
 def turnDetector(turnArray, addressArray, coordinateList):
-    # given array of turns point indexes, and matching array of addresses to 
-    # array of coordinates, detect what kind of turn happens
+    """Loops through each turning point and determines turn direction
+    
+    Parameters:
+    argument1 (list): Contains the indexes of each turn point
+    argument2 (list): Contains the addresses parsed from gpx file
+    argument3 (list-gpx points): Contains all of the gpx points in trip file
+
+    Returns:
+    list: Contains strings dictating distance and direction of trip
+    """
 
     # list to hold directions
     directions = []
@@ -480,17 +489,24 @@ def turnDetector(turnArray, addressArray, coordinateList):
             bearingDelta = bearingDifCalc(coordinateList[turnArray[i] - 1],
             coordinateList[turnArray[i]], coordinateList[turnArray[i] + 1])
 
+            # Determine distance between turn point and previous point
             distance = getDistance(coordinateList[turnArray[i]],
             coordinateList[turnArray[i - 1]])
 
             # set the turn direction depending on change in bearing
             if bearingDelta < 0: turn = "Left" 
             elif bearingDelta > 0: turn = "Right"
-            
-            direction = distance + " " + turn  + " " + "on " + addressArray[turnArray[i]]
+
+            # Form string containing direction
+            direction = distance + " " + turn  + " " + "on " 
+            + addressArray[turnArray[i]]
             directions.append(direction)
-    
+
+    # Print out the turn by turn directions 
     print(*directions, sep='\n-')
+
+    # Return the list of directions for front-end
+    return directions
 
 if __name__ == "__main__":
     main()
