@@ -12,11 +12,11 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from numpy import arctan2, sin, cos, arccos, degrees, radians
 
 def main():
-    parseArgs()
-    #path = input("Enter your gpx file path:")
-    #apiKey = input("Enter your Texas A&M API key:")
-    path = "data/run.gpx"
-    apiKey = "1553f4ca4c3e4e84a4c22adc3aae1886"
+    path = parseArgs()
+    print(path)
+    if path is None:
+        path = input("Enter your gpx file path:")
+    apiKey = input("Enter your Texas A&M API key:")
     
     # parse sample file at path to list of points
     coordinateList = gpxParser(path)
@@ -59,6 +59,8 @@ def parseArgs():
     action="store_true")
     parser.add_argument("--docs", help="prints out doc strings for functions", 
     action="store_true")
+    parser.add_argument("-s", "--sample", help="runs program and sample file", 
+    action="store_true")
     args = parser.parse_args()
     t = time.time()
     t = str(t)
@@ -79,6 +81,10 @@ def parseArgs():
         clearLogs()
     elif (args.docs):
         docsHelp()
+    elif (args.sample):
+        print("running on sample file")
+        path = "data/run.gpx"
+        return path
     else:
         print("no arguments selected")
 
