@@ -204,23 +204,44 @@ def getCompassDirection(bearingDegrees):
     # Return the direction on compass 
     return choices.get(direction, 'default')
 
-def getDistance(endPoint, startPoint):  #distance between coordinates using haversine formula
+def getDistance(endPoint, startPoint):
+    """Determine distance between coordinates using haversine formula
+
+    Parameters: 
+    argument1 (gpx point): Ending point
+    argument2 (gpx point): Starting point
+
+    Returns:
+    string:Distance with feet or miles units depending on length
+    """
+
+    # Convert all latitudes and longitudes to floats and then radians
     endLatitude = radians(float(endPoint.latitude))
     endLongitude = radians(float(endPoint.longitude))
     startLatitude = radians(float(startPoint.latitude))
     startLongitude = radians(float(startPoint.longitude))
+
+    # assign unit for return string
     unit = "miles"
 
-    distance = 3963.0 * arccos((sin(startLatitude) * sin(endLatitude)) +
-    cos(startLatitude) * cos(endLatitude) * cos(endLongitude - startLongitude))
+    # Calculate distance between points
+    distance = 3963.0 * arccos((sin(startLatitude) * sin(endLatitude)) 
+        + cos(startLatitude) * cos(endLatitude) 
+        * cos(endLongitude - startLongitude))
 
+    # If distance is below 1 mile change unit to feet
     if (distance < 1):
         distance = int(round(distance * 5280))
         unit = "feet"
 
+    # Form the distance string for logging and log
     distanceString = " distance from previous point is {0} {1}".format(distance, unit)
-    distanceReturn = "{0} {1}".format(distance, unit)
     logging.debug("%s",distanceString)
+    
+    # Form the return string 
+    distanceReturn = "{0} {1}".format(distance, unit)
+
+    # Return the distance string
     return distanceReturn
 
 def geocodeCoordinate(endPoint, startPoint):
