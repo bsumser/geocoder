@@ -24,6 +24,7 @@ Setup Environment Variables and run the project
 ```bash
 export FLASK_APP=flaskr
 export FLASK_ENV=development
+flask init-db
 flask run
 ```
 
