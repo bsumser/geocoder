@@ -7,7 +7,7 @@
 - [Dependencies](#dependencies)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Turn-by-turn Algorithm](#turn-by-turnalgorithm)
+- [Turn-by-turn Algorithm](#algorithm)
 ---
 ## Description
 
@@ -76,7 +76,7 @@ Log-in and Create a new trip by clicking [New](http://127.0.0.1:5000/create)
 Acceptable file formats include .gpx 
 
 ---
-## Turn-by-turn Algorithm
+## Algorithm
 Below is pseudocode for the turn-by-turn algorithm that geocode utilizes to determine at which points in the route turns occur. To accomplish this we used a modified version of binary search to return a list of key points that turns are made. 
 
 
