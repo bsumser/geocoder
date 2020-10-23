@@ -12,7 +12,7 @@ from numpy import arctan2, sin, cos, arccos, degrees, radians
 
 def main():
     parseArgs()
-    path = "data/sample.gpx"
+    path = "data/run.gpx"
     
     # parse sample file at path to list of points
     coordinateList = gpxParser(path)
@@ -258,7 +258,10 @@ def gpxParser(path):
     coordinateList = []
 
     # Open GPX for reading in path
-    gpx_file = open(path,'r')
+    try:
+        gpx_file = open(path,'r')
+    except:
+        print("gpx file not valid")
 
     # Declare GPX object from gpxpy for parsing
     gpx = gpxpy.parse(gpx_file)
@@ -268,9 +271,11 @@ def gpxParser(path):
         for segment in track.segments:
             for point in segment.points:
                 # Add the point to the list
+                print(point)
                 coordinateList.append(point)
     
     # Return list of all GPX points in file
+    print(coordinateList)
     return coordinateList
 
 def key_points(start, end, key, address):
@@ -369,7 +374,7 @@ def queryRunner(launcherQueryStringList):
         # shave off the number part of the address
         addressList[i] = addressList[i].split(" ",1)[1]
 
-    logging.debug("address list is: ",addressList)
+    #logging.debug("address list is: ",addressList)
     return addressList
 
 def bearingDifCalc(startPoint, midPoint, endPoint):
@@ -411,6 +416,7 @@ def turnDetector(turnArray, addressArray, coordinateList):
             #(turn,bearingDelta,turnArray[i],addressArray[turnArray[i]],coordinateList[turnArray[i]]))
 
             direction = distance + " " + turn  + " " + "on " + addressArray[turnArray[i]]
+            directions.append(direction)
             print(direction)
     
     print(*directions, sep='\n-')
