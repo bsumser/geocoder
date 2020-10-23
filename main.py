@@ -274,16 +274,28 @@ def gpxParser(path):
     return coordinateList
 
 def key_points(start, end, key, address):
+    """Recursive function to determine turn points
+    
+    Parameters:
+    argument1 (int):
+    argument1 (int): 
+    argument1 (list/array): To be filled with all key points, ie turning points
+    argument1 (list/array): List filled with addresses with number removed
 
-    n = (len(address)-1)  # n = number of total elements in the address
-    midpoint = int(math.ceil((end - start) / 2) + start)  # ceiling function to find midpoint
-    # print('midpoint', midpoint)
+    Returns:
+    list/array: Containing all key points ie turning points
+    """
+    
+    # n = number of total elements in the address
+    n = (len(address)-1)  
+    
+    # ceiling function to find midpoint 
+    midpoint = int(math.ceil((end - start) / 2) + start)  
 
     end = midpoint
 
-    # 1 Base case(s) 0 turns are made, or we have reached the end of the points.
+    # 1 Base case(s) 0 turns are made, or we have reached the end of the points
     if address[start] == address[n]:
-        # print('case1')
         key = np.append(key, n)
         print_key(key, address)
         return key
@@ -295,21 +307,29 @@ def key_points(start, end, key, address):
             end = n
             return key_points(start, end, key, address)
 
-    # 3 midpoint doesn't match starting and starting point is not next to end point
+    # 3 midpoint doesn't match starting and starting point is not next 
+    # to end point
     if address[start] != address[midpoint] and (start+1) != end:
-        # print('case3')
         return key_points(start, end, key, address)
 
     # 4 starting point matches midpoint
     if address[start] == address[midpoint]:
-        # print('case4')
         start = midpoint
         end = n
         return key_points(start,end, key, address)
 
-    # return start, end, key, address
+def print_key(key, address): 
+    """Prints out list of key points obtained from key_points()
+    
+    Parameters:
+    argument1 (list/array): contains key points of turns made
+    argument1 (int): 
+    argument1 (list/array): To be filled with all key points, ie turning points
+    argument1 (list/array): List filled with addresses with number removed
 
-def print_key(key, address): # key is the array holding the elements
+    Returns:
+    list/array: Containing all key points ie turning points
+    """
 
     if len(key) == 1:
         print('No turns made')
