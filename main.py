@@ -392,16 +392,10 @@ def turnDetector(turnArray, addressArray, coordinateList):
     # append to directions
     directions.append(start)
 
-    for i in turnArray:
-        print(i)
-
     print("turn detector")
     
-    # print first direction before loop
-    print(directions[0])
-    
     for i in range(len(turnArray)):
-        if turnArray[i] < len(coordinateList):
+        if turnArray[i] < len(coordinateList) - 1:
 
             # calculate change in bearing between turn point, and its previous and next point
             bearingDelta = bearingDifCalc(coordinateList[turnArray[i] - 1],
@@ -419,7 +413,7 @@ def turnDetector(turnArray, addressArray, coordinateList):
             direction = distance + " " + turn  + " " + "on " + addressArray[turnArray[i]]
             print(direction)
     
-    print(directions)
+    print(*directions, sep='\n-')
 
 if __name__ == "__main__":
     main()
