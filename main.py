@@ -89,8 +89,16 @@ def sendRequest(completeQuery):
     # Return the json data from request.
     return json_data
 
-# Form a request URL from a GPX coordinate as argument.
 def formRequestURL(coordinate):
+    """Form a request URL from a GPX coordinate as argument.
+    
+    Parameters: 
+    argument1 (gpx point): Coordinate to geocode in request URL
+    
+    Returns:
+    str:Completed query URL to Texas A&M API
+    
+    """
     # Convert the GPX point latitude and longitude to strings.
     coordLat = str(coordinate.latitude)
     coordLong = str(coordinate.longitude)
@@ -124,7 +132,6 @@ def formRequestURL(coordinate):
     
     # Return the query string
     return completeQuery
-
 
 def getBearing(endPoint, startPoint):
     """Function to determine bearing using start and end GPX points
