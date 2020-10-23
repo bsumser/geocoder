@@ -71,7 +71,7 @@ Once you have made your choice of how you want to run the program. You will be p
 Below is pseudocode for the turn-by-turn algorithm that geocode utilizes to determine at which points in the route turns occur. To accomplish this we used a modified version of binary search to return a list of key points that turns are made. 
 
 
-![Alt text](img/algorithm.png?raw=true "Algorithm")
+![Alt text](img/Algorithm.png?raw=true "Algorithm")
 
 ___
 
