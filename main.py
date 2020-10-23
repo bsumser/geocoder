@@ -69,11 +69,21 @@ def parseArgs():
     else:
         print("no arguments selected")
 
-# Get the address from json response from API
-def getAddress(json_data):    
+def getAddress(json_data):
+    """Get the address from json response from API"""
+
+    #Return street address, indexed from json argument
     return json_data['StreetAddresses'][0]['StreetAddress']
 
 def sendRequest(completeQuery):
+    """Send request to Texas A&M API
+    
+    Parameters: 
+    argument1 (string): Completed request URL to API
+    
+    Returns:
+    json: Reponse from API in json format
+    """
     # make the request from API
     response = requests.get(completeQuery)
 
@@ -97,7 +107,6 @@ def formRequestURL(coordinate):
     
     Returns:
     str:Completed query URL to Texas A&M API
-    
     """
     # Convert the GPX point latitude and longitude to strings.
     coordLat = str(coordinate.latitude)
@@ -143,7 +152,6 @@ def getBearing(endPoint, startPoint):
     
     Returns:
     int:Bearing betweeen 2 points in degrees
-    
     """
 
     # Convert all latitudes and longitudes for GPX point to float and then 
