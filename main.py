@@ -57,6 +57,8 @@ def parseArgs():
         action="store_true")
     parser.add_argument("-c","--clear", help="clears all log files in logs/", 
     action="store_true")
+    parser.add_argument("--docs", help="prints out doc strings for functions", 
+    action="store_true")
     args = parser.parse_args()
     t = time.time()
     t = str(t)
@@ -75,10 +77,30 @@ def parseArgs():
     elif (args.clear):
         print("-c or --clear flag used, clearing all log files")
         clearLogs()
+    elif (args.docs):
+        docsHelp()
     else:
         print("no arguments selected")
 
+def docsHelp():
+    print("clearLogs():\n",clearLogs.__doc__)
+    print("getAddress():\n",getAddress.__doc__)
+    print("sendRequest():\n",sendRequest.__doc__)
+    print("formRequestURL():\n",formRequestURL.__doc__)
+    print("getBearing():\n",getBearing.__doc__)
+    print("getCompassDirection():\n",getCompassDirection.__doc__)
+    print("getDistance():\n",getDistance.__doc__)
+    print("gpxParser():\n",gpxParser.__doc__)
+    print("key_points():\n",key_points.__doc__)
+    print("print_key():\n",print_key.__doc__)
+    print("multiThreadQueryMaker():\n",multiThreadQueryMaker.__doc__)
+    print("queryRunner():\n",queryRunner.__doc__)
+    print("bearingDifCalc():\n",bearingDifCalc.__doc__)
+    print("turnDetector():\n",turnDetector.__doc__)
+    quit()
+
 def clearLogs():
+    """Clears out all the log files in the logs/ directory"""
     logDir = "logs/"
     logs = [f for f in os.listdir(logDir) if f.endswith(".log")]
     for f in logs:
