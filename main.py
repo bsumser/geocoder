@@ -180,6 +180,7 @@ def getBearing(endPoint, startPoint):
     return bearingDegrees
 
 def getCompassDirection(bearingDegrees):
+    """Determines direction on 16 point compass based on bearing in degrees"""
     direction = int(round(bearingDegrees / 22.5))
     choices = {
         1: "NNE",
@@ -199,6 +200,8 @@ def getCompassDirection(bearingDegrees):
         15: "NNW",
         16: "N"
     }
+
+    # Return the direction on compass 
     return choices.get(direction, 'default')
 
 def getDistance(endPoint, startPoint):  #distance between coordinates using haversine formula
