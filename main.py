@@ -89,20 +89,40 @@ def sendRequest(completeQuery):
     # Return the json data from request.
     return json_data
 
+# Form a request URL from a GPX coordinate as argument.
 def getUserInput(coordinate):
+    # Convert the GPX point latitude and longitude to strings.
     coordLat = str(coordinate.latitude)
     coordLong = str(coordinate.longitude)
+
+    # URL for Texas A&M Geocoding API
     httpClient = "https://geoservices.tamu.edu/Services/ReverseGeocoding/WebService/v04_01/HTTP/default.aspx?"
+
+    # Format latitude and longitude fields for the request URL
     lat = "lat="
     lon = "&lon="
     lat = lat + coordLat
     lon = lon + coordLong
+
+    # API key field for request URL
     apikey = "&apikey=1553f4ca4c3e4e84a4c22adc3aae1886"
+    
+    # Format of data from request result
     formatT = "&format=json"
+    
+    # Choose whether to store 
     notStore = "&notStore=false"
+    
+    # Verion field for API
     version = "&version=4.10"
+    
+    # Combine all fields to form complete request URL
     completeQuery = httpClient + lat + lon + apikey + formatT + notStore + version
+    
+    # Debug log of completed query string
     logging.debug("Complete query: %s",completeQuery)
+    
+    # Return the query string
     return completeQuery
 
 def getBearing(endPoint, startPoint):     #Function to determine bearing
