@@ -7,15 +7,16 @@ import math
 import time
 import logging
 import argparse
-import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from numpy import arctan2, sin, cos, arccos, degrees, radians
 
 def main():
     parseArgs()
     path = "data/sample.gpx"
-    coordinateList = gpxParser(path)    #parse sample file at path to list of points
-
+    
+    # parse sample file at path to list of points
+    coordinateList = gpxParser(path)
+    
     #addressListTest = addressParser(coordinateList)
 
     # test multiThreadQueryMaker
@@ -28,11 +29,18 @@ def main():
                         ' bob ave ', ' bob ave ', ' sam ', ' sam ', ' tim rd ',
                         ' tim rd ', ' tim rd ', ' tim rd '])
 
-    key = np.array([], dtype=int)  # initializes empty array using numpy library
+    # initializes empty array using numpy library
+    key = np.array([], dtype=int)  
+    
+    # starting element to make the comparison
+    start = 0
 
-    start = 0  # starting element to make the comparison
-    n = (len(addressListTest) - 1)  # n = number of total elements in the address
-    end = n  # ending element to make the comparison
+    # n = number of total elements in the address
+    n = (len(addressListTest) - 1)  
+    
+    # ending element to make the comparison
+    end = n  
+    
     keyArray = key_points(start, end, key, addressListTest)
 
     turnDetector(keyArray, addressListTest, coordinateList)
@@ -61,15 +69,24 @@ def parseArgs():
     else:
         print("no arguments selected")
 
-def getAddress(json_data):    #Get the address from json response from API
+# Get the address from json response from API
+def getAddress(json_data):    
     return json_data['StreetAddresses'][0]['StreetAddress']
 
 def sendRequest(completeQuery):
-    # try/catch block for requests error handling
+    # make the request from API
     response = requests.get(completeQuery)
+
+    # Get the status code from the request.
     responseCode = response.status_code
+
+    # Store json_data as object.
     json_data = json.loads(response.text)
+
+    # log the request URL and reponse code.
     logging.debug("sendRequest() request URL is: %s \n Status Code:%i",completeQuery,responseCode)
+
+    # Return the json data from request.
     return json_data
 
 def getUserInput(coordinate):
@@ -248,22 +265,12 @@ def multiThreadQueryMaker(coordinateList):
 
     return launcherQueryStringList
 
-def threadAddressFiller(index, query):
-    address = sendRequest(query) #send the request and get json_data
-
-    address = address.split(" ",1)[1] #split off the number part of the address
-
-    addressList.insert(index, address) #save the address to the list
-    
-    return addressList 
-
 def queryRunner(launcherQueryStringList):
     addressList = [None] * len(launcherQueryStringList)
     futures = [None] * len(launcherQueryStringList)
 
     with ThreadPoolExecutor(max_workers=10) as executor:
         for i in range(len(launcherQueryStringList)):
-            file_name = uuid.uuid1()
             futures[i] = executor.submit(sendRequest, launcherQueryStringList[i])
     for i in range(len(futures)):
         addressList[i] = getAddress(futures[i].result())
