@@ -1,5 +1,5 @@
 ---
-   ###### author(s): Justin stewart, Brett Summers
+   ###### author(s): [Justin stewart], [Brett Sumser]
 
 ---
 - [Description](#description)
