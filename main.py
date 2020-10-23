@@ -90,7 +90,7 @@ def sendRequest(completeQuery):
     return json_data
 
 # Form a request URL from a GPX coordinate as argument.
-def getUserInput(coordinate):
+def formRequestURL(coordinate):
     # Convert the GPX point latitude and longitude to strings.
     coordLat = str(coordinate.latitude)
     coordLong = str(coordinate.longitude)
@@ -125,16 +125,43 @@ def getUserInput(coordinate):
     # Return the query string
     return completeQuery
 
-def getBearing(endPoint, startPoint):     #Function to determine bearing
+
+def getBearing(endPoint, startPoint):
+    """Function to determine bearing using start and end GPX points
+    
+    Parameters: 
+    argument1 (gpx point): Ending point
+    argument2 (gpx point): Starting point
+    
+    
+    Returns:
+    int:Bearing betweeen 2 points in degrees
+    
+    """
+
+    # Convert all latitudes and longitudes for GPX point to float and then 
     endLatitude = radians(float(endPoint.latitude))
     endLongitude = radians(float(endPoint.longitude))
     startLatitude = radians(float(startPoint.latitude))
     startLongitude = radians(float(startPoint.longitude))
+
+    # Spherical Law of Cosines determination of bearing
     X = cos(endLatitude) * sin((endLongitude - startLongitude))
-    Y = (cos(startLatitude) * sin(endLatitude)) - (sin(startLatitude) * cos(endLatitude) * cos((endLongitude - startLongitude)))
+    Y = (cos(startLatitude) * sin(endLatitude)) - (sin(startLatitude) 
+        * cos(endLatitude) 
+        * cos((endLongitude - startLongitude)))
+    
+    # Convert radians to degrees
     bearingDegrees = degrees(arctan2(X,Y))
+
+    # Normalize result to compass bearing since arctan2 returs values in range
+    # of -180 to +180
     bearingDegrees = (bearingDegrees + 360) % 360
+
+    # Log bearing info
     logging.debug("Bearing in degrees is %i", bearingDegrees)
+
+    # Return the bearing
     return bearingDegrees
 
 def getCompassDirection(bearingDegrees):
@@ -184,7 +211,7 @@ def geocodeCoordinate(endPoint, startPoint):
     endLongitude = float(endPoint.longitude)
     startLatitude = float(startPoint.latitude)
     startLongitude = float(startPoint.longitude)
-    queryFields = getUserInput(endPoint)
+    queryFields = formRequestURL(endPoint)
     bearing = getBearing(endPoint, startPoint)
     json_data = sendRequest(queryFields)
     address = getAddress(json_data)
@@ -275,10 +302,10 @@ def multiThreadQueryMaker(coordinateList):
     launcherQueryStringList = []
 
     for i in range(len(coordinateList)):
-        logging.debug("calling getUserInput on coordinateList index %i, point:(%i,%i)",
+        logging.debug("calling formRequestURL on coordinateList index %i, point:(%i,%i)",
         i, coordinateList[i].latitude,coordinateList[i].longitude)
         # convert coordinate to query parameters
-        completeQuery = getUserInput(coordinateList[i])
+        completeQuery = formRequestURL(coordinateList[i])
 
         # append the completeQuery to launcherQueryStringList
         launcherQueryStringList.append(completeQuery)
