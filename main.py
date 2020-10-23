@@ -150,7 +150,8 @@ def formRequestURL(coordinate, apiKey):
     version = "&version=4.10"
     
     # Combine all fields to form complete request URL
-    completeQuery = httpClient + lat + lon + completeKey + formatT + notStore + version
+    completeQuery = httpClient + lat + lon + completeKey + formatT + notStore \
+        + version
     
     # Debug log of completed query string
     logging.debug("Complete query: %s",completeQuery)
@@ -356,48 +357,106 @@ def print_key(key, address):
         logging.debug("No turns made")
 
     i = 0
-    logging.debug('Your turns were made at the points of the first column and the streets of the second column: ')
+    logging.debug('Your turns were made at the points of the first column\
+    and the streets of the second column: ')
     while i < len(key):
         logging.debug("%s, %s",key[i], address[key[i]])
         i = i+1
 
 def multiThreadQueryMaker(coordinateList, apiKey):
+    """Prepares list of every request URL for each coordinate in list
+    
+    Parameters:
+    argument1 (list): List of parsed GPX coordinates
+    argument1 (string): String containing valid Texas A&M geocoding api key
+
+    Returns:
+    list: List of all request URLs for each coordinate point
+    """
+
+    # Empty list to store all of the request URLs
     launcherQueryStringList = []
 
+    # loop through all the coordinates
     for i in range(len(coordinateList)):
-        logging.debug("calling formRequestURL on coordinateList index %i, point:(%i,%i)",
-        i, coordinateList[i].latitude,coordinateList[i].longitude)
+        # Debug logging message for testing
+        logging.debug("calling formRequestURL on coordinateList index %i, \
+            point:(%i,%i)", i, coordinateList[i].latitude,
+            coordinateList[i].longitude)
+
         # convert coordinate to query parameters
         completeQuery = formRequestURL(coordinateList[i], apiKey)
 
         # append the completeQuery to launcherQueryStringList
         launcherQueryStringList.append(completeQuery)
 
+    # Return list of all of the request URLs
     return launcherQueryStringList
 
 def queryRunner(launcherQueryStringList):
+    """Multithreaded asynchronous approach to making multiple requests to API
+    
+    Parameters:
+    argument1 (list): Contains every request URL that will be made
+
+    Returns:
+    list: All addresses geocoded from the launcherQueryStringList
+    """
+    # List initialized with none values of the length of query list
     addressList = [None] * len(launcherQueryStringList)
+
+    # List of futures returned from executor.submit
     futures = [None] * len(launcherQueryStringList)
 
+    # Start the thread pool that will make requests from API
     with ThreadPoolExecutor(max_workers=10) as executor:
+
+        # Loop through every request in query list
         for i in range(len(launcherQueryStringList)):
+            # Sets the future that will contain response into its appropriate
+            # index. This helps to avoid race conditions because the future
+            # reponse will ONLY be placed into its appropriate index.
             futures[i] = executor.submit(sendRequest, launcherQueryStringList[i])
-    for i in range(len(futures)):
-        addressList[i] = getAddress(futures[i].result())
     
+    # Loop through each completed future
+    for i in range(len(futures)):
+        # Get the address info from the future
+        addressList[i] = getAddress(futures[i].result())
+
+        # Debug log containing address data
         logging.debug("addressList[%i] removing numbers",i)
         
         # shave off the number part of the address
         addressList[i] = addressList[i].split(" ",1)[1]
 
-    #logging.debug("address list is: ",addressList)
+    #logging.debug("completed address list is: ",addressList)
     return addressList
 
 def bearingDifCalc(startPoint, midPoint, endPoint):
+    """Calculates the difference in bearing given 3 points
+    
+    Parameters:
+    argument1 (gpx point): The starting point of the three
+    argument2 (gpx point): The middle point of the three
+    argument3 (gpx point): The ending point of the three
+
+    Returns:
+    int: The change in bearing calculated
+    """
+    
+    # Calculate the first bearing
     bearingDelta1 = getBearing(midPoint, startPoint)
+
+    # Calculate the second bearing
     bearingDelta2 = getBearing(endPoint, midPoint)
+
+    # Calculate the difference in bearing
     totalBearingDelta = bearingDelta2 - bearingDelta1
+
+    # Debug log of the bearing equation
     logging.debug("change in bearing is: %i = %i - %i",totalBearingDelta, bearingDelta2, bearingDelta1)
+
+    # Return the calculated change in bearing
     return totalBearingDelta
 
 def turnDetector(turnArray, addressArray, coordinateList):
