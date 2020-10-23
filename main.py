@@ -245,15 +245,32 @@ def getDistance(endPoint, startPoint):
     return distanceReturn
 
 def gpxParser(path):
+    """Parse GPX file of points and add them all the list
+    
+    Parameters:
+    argument1 (str): The file path for GPX data file
+
+    Returns:
+    list: List of all coordinates points from file
+    """
+
+    # Empty list for returning GPX points
     coordinateList = []
+
+    # Open GPX for reading in path
     gpx_file = open(path,'r')
 
+    # Declare GPX object from gpxpy for parsing
     gpx = gpxpy.parse(gpx_file)
 
+    # Loop through file to get every coordinate
     for track in gpx.tracks:
         for segment in track.segments:
             for point in segment.points:
+                # Add the point to the list
                 coordinateList.append(point)
+    
+    # Return list of all GPX points in file
     return coordinateList
 
 def key_points(start, end, key, address):
