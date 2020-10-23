@@ -29,3 +29,13 @@ flask run
 ```
 
 Your project will be available at http://127.0.0.1:5000/
+
+## Usage 
+
+Create a User by clicking [Register](http://127.0.0.1:5000/auth/register)
+
+Your Texas A&M API Key will be entered in here 
+
+Log-in and Create a new trip by clicking [New](http://127.0.0.1:5000/create)
+
+Acceptable file formats include .gpx 

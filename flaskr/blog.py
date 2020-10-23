@@ -26,7 +26,6 @@ bp = Blueprint('blog', __name__)
 UPLOAD_FOLDER = './uploads'
 ALLOWED_EXTENSIONS = {'gpx', 'txt'}
 
-apiKey = "1553f4ca4c3e4e84a4c22adc3aae1886"
 
 def parseArgs():
     parser = argparse.ArgumentParser()
@@ -541,7 +540,8 @@ def create():
         coordinateList = gpxParser(os.path.join(UPLOAD_FOLDER, filename))
     
         # test multiThreadQueryMaker
-        queryList = multiThreadQueryMaker(coordinateList, apiKey)
+        print(g.user)
+        queryList = multiThreadQueryMaker(coordinateList, g.user['api_key'])
 
         # run the query list to get the address list
         addressListTest = queryRunner(queryList)
