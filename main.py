@@ -498,7 +498,7 @@ def turnDetector(turnArray, addressArray, coordinateList):
             elif bearingDelta > 0: turn = "Right"
 
             # Form string containing direction
-            direction = distance + " " + turn  + " " + "on " 
+            direction = distance + " " + turn  + " " + "on "\
             + addressArray[turnArray[i]]
             directions.append(direction)
 
