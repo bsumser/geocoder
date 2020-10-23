@@ -1,5 +1,5 @@
 ---
-   ###### author(s): [Justin stewart], [Brett Sumser]
+   ###### author(s): [Justin stewart](https://github.com/stewartjustinl), [Brett Sumser](https://github.com/bsumser)
 
 ---
 - [Description](#description)
@@ -27,7 +27,7 @@ It is possible that you will have to install some dependency libraries, this can
 ---
 ## Dependencies
 
-   Geocoder relies upon the requests, numpy, and gpxpy module, you can use "pip3" to install these via the command below. The user will need there own valid Texas A&M geocoding API key
+   Geocoder relies upon the requests, numpy, and gpxpy module, you can use "pip3" to install these via the command below. The user will need there own valid Texas A&M geocoding API key as well to utilize their service for program functionality.
 
 ```
 pip3 install -r requirements.txt
@@ -48,15 +48,19 @@ Or
 ```
 python3 main.py --verbose
 ```
-To run the program and save the debug portion of the code to a log file use the command
+To run the program and save the debug portion of the code to a log file use the command:
 ```
 python3 main.py -d
-``` 
-To run the program as well as clear the log file(s) use the command
+```
+Or
+```
+python3 main.py --debug
+```
+To clear log files from program use the command:
 ```
 python3 main.py -c
 ``` 
-To run the program using a provided sample .gpx file use the command
+To run the program using a sample .gpx file that we provide use the command:
 ```
 python3 main.py -s 
 ```
