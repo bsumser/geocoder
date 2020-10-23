@@ -11,11 +11,11 @@
 ---
 ## Description
 
-Geocoder is an attempt to produce turn by turn directions from a gpx file/route by using the [Texas A&M Geoservices web API.](https://geoservices.tamu.edu/Services/Geocode/). To accomplish the intended results we used a reverse geocoder that takes in the Longitude and Latitude coordinates and returns addresses. We then use the addresses to return to the user a set of turn by turn directions as well as the distance between each turn. 
+Geocoder is an attempt to produce turn by turn directions from a gpx file/route by using the [Texas A&M Geoservices web API.](https://geoservices.tamu.edu/Services/Geocode/). To accomplish the intended results we used a reverse geocoder that takes in the Longitude and Latitude coordinates and returns addresses. We then use the addresses to return to the user a set of turn by turn directions as well as the distance between each turn. Multithreading has been implemented into the API requests to greatly reduce the time required to produce a queue sheet. 
 
 ---
 ## Codebase
-To find out information about the functionality of the code you can look inside the "main.py" file. Each of the functions have been documented using python docstrings if the user wishes to print the docstrings for main.py they can do so by the below command
+To find out information about the functionality of the code you can look inside the "algorithm.py" file in the flaskr directory. Each of the functions have been documented using python docstrings if the user wishes to print the docstrings for main.py they can do so by the below command
 ```
 python3 flaskr/algorithm.py --docs
 ```
