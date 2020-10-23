@@ -12,10 +12,15 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from numpy import arctan2, sin, cos, arccos, degrees, radians
 
 def main():
+    # Get path from arg if -s or --sample entered
     path = parseArgs()
-    print(path)
+    #print(path)
+
+    # If -s or --sample not used, get path from user
     if path is None:
         path = input("Enter your gpx file path:")
+
+    # Prompt user for their Texas A&M api key
     apiKey = input("Enter your Texas A&M API key:")
     
     # parse sample file at path to list of points
