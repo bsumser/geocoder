@@ -106,4 +106,3 @@ M = \text{Midpoint between S & E}\\
 &else\\
 &&\text{key_points(S,E)}\\
 \end{split}
--->
