@@ -63,18 +63,16 @@ def parseArgs():
     log = "logs/log-" + t + ".log"
     print(log)
     if (args.verbose):
-        f= open(log,"w+")
-        f.close()
-        FORMAT = "[%(lineno)s - %(funcName)20s() ] %(message)s"
-        logging.basicConfig(format=FORMAT, filename=log,level=logging.INFO)
+        FORMAT = "%(message)s"
+        logging.basicConfig(format=FORMAT,level=logging.INFO)
         print("-v or --verbose flag used, logging mode set to info")
-    if (args.debug):
+    elif (args.debug):
         f= open(log,"w+")
         f.close()
         FORMAT = "[%(lineno)s - %(funcName)20s() ] %(message)s"
         logging.basicConfig(format=FORMAT, filename=log,level=logging.DEBUG)
         print("-d or --debug flag used, logging mode set to debug")
-    if (args.clear):
+    elif (args.clear):
         print("-c or --clear flag used, clearing all log files")
         clearLogs()
     else:
@@ -289,11 +287,11 @@ def gpxParser(path):
         for segment in track.segments:
             for point in segment.points:
                 # Add the point to the list
-                print(point)
+                logging.debug(point)
                 coordinateList.append(point)
     
     # Return list of all GPX points in file
-    print(coordinateList)
+    logging.info("Parsed coordinate list of %i points",len(coordinateList))
     return coordinateList
 
 def key_points(start, end, key, address):
